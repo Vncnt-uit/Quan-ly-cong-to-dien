@@ -70,8 +70,11 @@ namespace Quản_lý_công_tơ_điện
                     MessageBox.Show("Số CCCD này đã được đăng ký trước đó! Mỗi người chỉ được đăng ký một lần.",
                                     "CCCD Đã Tồn Tại", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-                    txtCCCD.Focus();
-                    txtCCCD.SelectAll();
+                    txtCCCD.Clear();
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        txtCCCD.Focus();
+                    }), System.Windows.Threading.DispatcherPriority.Input);
                 }
             }
         }
@@ -119,7 +122,11 @@ namespace Quản_lý_công_tơ_điện
                 string currentId = lblMaYeuCau.Text;
 
                 DateOnly? dob = null;
-                if (int.TryParse(txtNamSinh.Text, out int year))
+                if (DateOnly.TryParse(txtNamSinh.Text, out DateOnly parsedDate))
+                {
+                    dob = parsedDate;
+                }
+                else if (int.TryParse(txtNamSinh.Text, out int year))
                 {
                     dob = new DateOnly(year, 1, 1);
                 }
