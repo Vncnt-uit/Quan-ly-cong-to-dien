@@ -1,8 +1,7 @@
-﻿using Quản_lý_công_tơ_điện.Models;
-using Microsoft.EntityFrameworkCore; // <-- You need this for UseSqlServer
-using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
+using Quản_lý_công_tơ_điện.Models;
+using Quản_lý_công_tơ_điện.ViewModels;
+using Quản_lý_công_tơ_điện.Views;
 
 namespace Quản_lý_công_tơ_điện
 {
@@ -12,22 +11,13 @@ namespace Quản_lý_công_tơ_điện
         {
             base.OnStartup(e);
 
-            // 1. Prepare the setup options for Entity Framework
-            var optionsBuilder = new DbContextOptionsBuilder<QuanLyCapDienContext>();
-            
-            // Note: If you don't have an App.config file yet, you can replace the ConfigurationManager line 
-            // with your raw string: "Data Source=VINCENT;Initial Catalog=QuanLyCapDien;Integrated Security=True;TrustServerCertificate=True;"
-            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            
-            optionsBuilder.UseSqlServer(connectionString);
+            var dbContext = new QuanLyCapDienContext();
 
-            // 2. Pass those options into the constructor! (This makes the red error vanish)
-            var sharedContext = new QuanLyCapDienContext(optionsBuilder.Options);
+            dbContext.Database.EnsureCreated();
 
-            // 3. Hand it directly to MainWindow
-            var mainWindow = new MainWindow(sharedContext);
+            var mainViewModel = new DanhMucViewModel(dbContext);
+            var mainWindow = new DanhMuc(mainViewModel);
 
-            // 4. Show the window
             mainWindow.Show();
         }
     }
