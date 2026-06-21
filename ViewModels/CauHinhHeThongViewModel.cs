@@ -21,6 +21,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         private bool _hasTenMucDichError;
         private string _tenMucDichErrorMessage;
 
+        private bool _isReloading = false;
+
         public QuyDinhGiaDien SelectedQuyDinhGia { get => _selectedQuyDinhGia; set { _selectedQuyDinhGia = value; OnPropertyChanged(); } }
         public Mucdich SelectedMucDich { get => _selectedMucDich; set { _selectedMucDich = value; OnPropertyChanged(); } }
         public CauHinhRow SelectedCauHinh { get => _selectedCauHinh; set { _selectedCauHinh = value; OnPropertyChanged(); } }
@@ -81,6 +83,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
         private void ClearStatus()
         {
+            if (_isReloading) return;
+
             if (!string.IsNullOrEmpty(StatusMessage))
             {
                 StatusMessage = string.Empty;
@@ -90,19 +94,27 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
         private void LoadAllData()
         {
-            DanhSachQuyDinhGia.Clear();
-            var prices = _db.QuyDinhGiaDiens.OrderBy(p => p.Bac).ToList();
-            foreach (var p in prices) DanhSachQuyDinhGia.Add(p);
+            _isReloading = true;
+            try
+            {
+                DanhSachQuyDinhGia.Clear();
+                var prices = _db.QuyDinhGiaDiens.OrderBy(p => p.Bac).ToList();
+                foreach (var p in prices) DanhSachQuyDinhGia.Add(p);
 
-            DanhSachMucDich.Clear();
-            var purposes = _db.Mucdiches.ToList();
-            foreach (var m in purposes) DanhSachMucDich.Add(m);
+                DanhSachMucDich.Clear();
+                var purposes = _db.Mucdiches.ToList();
+                foreach (var m in purposes) DanhSachMucDich.Add(m);
 
-            DanhSachLoaiPha.Clear();
-            var phases = _db.Loaiphas.ToList();
-            foreach (var l in phases) DanhSachLoaiPha.Add(l);
+                DanhSachLoaiPha.Clear();
+                var phases = _db.Loaiphas.ToList();
+                foreach (var l in phases) DanhSachLoaiPha.Add(l);
 
-            LoadConstraintsGrid();
+                LoadConstraintsGrid();
+            }
+            finally
+            {
+                _isReloading = false;
+            }
         }
 
         private void LoadConstraintsGrid()
@@ -275,6 +287,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
+                _db.ChangeTracker.Clear();
+
                 IsSuccessStatus = false;
                 StatusMessage = "LỖI THÊM MỤC ĐÍCH.";
                 System.Diagnostics.Debug.WriteLine($"Lỗi: {ex.Message}");
@@ -331,6 +345,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
+                _db.ChangeTracker.Clear();
+
                 IsSuccessStatus = false;
                 StatusMessage = "LỖI THÊM CẤU HÌNH.";
                 System.Diagnostics.Debug.WriteLine($"Lỗi: {ex.Message}");
@@ -354,6 +370,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
+                _db.ChangeTracker.Clear();
+
                 IsSuccessStatus = false;
                 StatusMessage = "LỖI XÓA CẤU HÌNH.";
                 System.Diagnostics.Debug.WriteLine($"Lỗi: {ex.Message}");
