@@ -5,15 +5,6 @@ using System.Windows.Input;
 
 namespace Quản_lý_công_tơ_điện.ViewModels
 {
-    public class ThongKeRowViewModel
-    {
-        public int STT { get; set; }
-        public string ThangText => $"Tháng {Thang}";
-        public int Thang { get; set; }
-        public int SanLuong { get; set; }
-        public string SoVoiThangTruoc { get; set; }
-    }
-
     class ThongKeDienViewModel : BaseViewModel
     {
         private readonly QuanLyCapDienContext _db;
@@ -132,6 +123,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                     int prevTotal = monthlyTotals.ContainsKey(prevMonthStr) ? monthlyTotals[prevMonthStr] : 0;
 
                     string percentageStr;
+                    int currentTrend = 0;
 
                     if (currentTotal == 0 && prevTotal == 0)
                     {
@@ -140,12 +132,16 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                     else if (prevTotal == 0)
                     {
                         percentageStr = "+100%";
+                        currentTrend = 1;
                     }
                     else
                     {
                         double variance = ((double)(currentTotal - prevTotal) / prevTotal) * 100;
                         string sign = variance > 0 ? "+" : "";
                         percentageStr = $"{sign}{Math.Round(variance, 2)}%";
+
+                        if (variance > 0) currentTrend = 1;
+                        else if (variance < 0) currentTrend = -1;
                     }
 
                     DanhSachThongKe.Add(new ThongKeRowViewModel
@@ -153,7 +149,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                         STT = i,
                         Thang = i,
                         SanLuong = currentTotal,
-                        SoVoiThangTruoc = percentageStr
+                        SoVoiThangTruoc = percentageStr,
+                        XuHuong = currentTrend
                     });
                 }
 

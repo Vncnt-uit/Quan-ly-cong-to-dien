@@ -5,4 +5,5 @@
         public int Thang { get; set; }
         public int SanLuong { get; set; }
         public string SoVoiThangTruoc { get; set; }
-    }
+        public int XuHuong { get; set; }
+}
