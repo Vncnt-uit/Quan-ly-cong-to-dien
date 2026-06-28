@@ -258,7 +258,8 @@
                                                   Background="Transparent" BorderThickness="0" RowHeight="40" AlternatingRowBackground="#eff4fd">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="MÃ MỤC ĐÍCH" Binding="{Binding MaMucDich}" IsReadOnly="True" Width="0.6*" ElementStyle="{StaticResource CenterText}"/>
-                                                <DataGridTextColumn Header="TÊN MỤC ĐÍCH" Binding="{Binding TenMucDich}" IsReadOnly="True" Width="1*" ElementStyle="{StaticResource CenterText}"/>
+
+                                                <DataGridTextColumn Header="TÊN MỤC ĐÍCH" Binding="{Binding TenMucDich, UpdateSourceTrigger=LostFocus}" Width="1*" ElementStyle="{StaticResource CenterText}" EditingElementStyle="{StaticResource CenterTextBox}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>

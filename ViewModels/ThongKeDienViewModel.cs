@@ -114,7 +114,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 var monthlyTotals = rawData.GroupBy(x => x.KyGhiChiSo)
                                            .ToDictionary(g => g.Key, g => g.Sum(x => x.SanLuongTieuThu));
 
-                for (int i = 1; i <= 12; i++)
+                int maxMonth = (nam == DateTime.Now.Year) ? DateTime.Now.Month : 12;
+                for (int i = 1; i <= maxMonth; i++)
                 {
                     string currentMonthStr = $"{i:D2}/{nam}";
                     string prevMonthStr = i == 1 ? $"12/{nam - 1}" : $"{(i - 1):D2}/{nam}";

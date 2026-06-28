@@ -8,8 +8,8 @@ namespace Quản_lý_công_tơ_điện.UIModels
     {
         private readonly QuanLyCapDienContext _db;
 
-        public Action<ChiTietGhiDienRow> RequestDelete { get; set; }public
-        Action RequestValidation { get; set; }
+        public Action<ChiTietGhiDienRow> RequestDelete { get; set; }
+        public Action RequestValidation { get; set; }
 
         private int _stt;
         private string _maCongTo;

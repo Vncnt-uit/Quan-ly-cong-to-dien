@@ -1,5 +1,6 @@
 ﻿using Quản_lý_công_tơ_điện.Helpers;
 using Quản_lý_công_tơ_điện.Models;
+using Quản_lý_công_tơ_điện.UIModels;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -11,9 +12,9 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
         private string _tenMucDichMoi;
         private QuyDinhGiaDien _selectedQuyDinhGia;
-        private Mucdich _selectedMucDich;
+        private CauHinhRow _selectedMucDich;
         private CauHinhRow _selectedCauHinh;
-        private Mucdich _selectedMucDichToAdd;
+        private CauHinhRow _selectedMucDichToAdd;
         private Loaipha _selectedLoaiPhaToAdd;
 
         private string _statusMessage;
@@ -24,9 +25,9 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         private bool _isReloading = false;
 
         public QuyDinhGiaDien SelectedQuyDinhGia { get => _selectedQuyDinhGia; set { _selectedQuyDinhGia = value; OnPropertyChanged(); } }
-        public Mucdich SelectedMucDich { get => _selectedMucDich; set { _selectedMucDich = value; OnPropertyChanged(); } }
+        public CauHinhRow SelectedMucDich { get => _selectedMucDich; set { _selectedMucDich = value; OnPropertyChanged(); } }
         public CauHinhRow SelectedCauHinh { get => _selectedCauHinh; set { _selectedCauHinh = value; OnPropertyChanged(); } }
-        public Mucdich SelectedMucDichToAdd { get => _selectedMucDichToAdd; set { _selectedMucDichToAdd = value; OnPropertyChanged(); ClearStatus(); } }
+        public CauHinhRow SelectedMucDichToAdd { get => _selectedMucDichToAdd; set { _selectedMucDichToAdd = value; OnPropertyChanged(); ClearStatus(); } }
         public Loaipha SelectedLoaiPhaToAdd { get => _selectedLoaiPhaToAdd; set { _selectedLoaiPhaToAdd = value; OnPropertyChanged(); ClearStatus(); } }
 
         public string TenMucDichMoi { get => _tenMucDichMoi; set { _tenMucDichMoi = value; OnPropertyChanged(); ClearStatus(); ValidateTenMucDich(); } }
@@ -37,7 +38,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public string TenMucDichErrorMessage { get => _tenMucDichErrorMessage; set { _tenMucDichErrorMessage = value; OnPropertyChanged(); } }
 
         public ObservableCollection<QuyDinhGiaDien> DanhSachQuyDinhGia { get; set; }
-        public ObservableCollection<Mucdich> DanhSachMucDich { get; set; }
+        public ObservableCollection<CauHinhRow> DanhSachMucDich { get; set; }
         public ObservableCollection<Loaipha> DanhSachLoaiPha { get; set; }
         public ObservableCollection<CauHinhRow> DanhSachCauHinh { get; set; }
 
@@ -54,7 +55,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             _db = context;
 
             DanhSachQuyDinhGia = new ObservableCollection<QuyDinhGiaDien>();
-            DanhSachMucDich = new ObservableCollection<Mucdich>();
+            DanhSachMucDich = new ObservableCollection<CauHinhRow>();
             DanhSachLoaiPha = new ObservableCollection<Loaipha>();
             DanhSachCauHinh = new ObservableCollection<CauHinhRow>();
 
@@ -103,7 +104,13 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
                 DanhSachMucDich.Clear();
                 var purposes = _db.Mucdiches.ToList();
-                foreach (var m in purposes) DanhSachMucDich.Add(m);
+                foreach (var m in purposes)
+                {
+                    var row = new CauHinhRow { MaMucDich = m.MaMucDich };
+                    row.SetInitialName(m.TenMucDich);
+                    row.RequestSave = SaveCauHinhInlineEdit;
+                    DanhSachMucDich.Add(row);
+                }
 
                 DanhSachLoaiPha.Clear();
                 var phases = _db.Loaiphas.ToList();
@@ -120,18 +127,69 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         private void LoadConstraintsGrid()
         {
             DanhSachCauHinh.Clear();
-            var constraints = (from ch in _db.Cauhinhcapdiens
-                               join md in _db.Mucdiches on ch.MaMucDich equals md.MaMucDich
-                               join lp in _db.Loaiphas on ch.MaSoPha equals lp.MaSoPha
-                               select new CauHinhRow
-                               {
-                                   MaMucDich = ch.MaMucDich,
-                                   MaSoPha = ch.MaSoPha,
-                                   TenMucDich = md.TenMucDich,
-                                   TenSoPha = lp.TenSoPha
-                               }).ToList();
 
-            foreach (var row in constraints) DanhSachCauHinh.Add(row);
+            var rawData = (from ch in _db.Cauhinhcapdiens
+                           join md in _db.Mucdiches on ch.MaMucDich equals md.MaMucDich
+                           join lp in _db.Loaiphas on ch.MaSoPha equals lp.MaSoPha
+                           select new
+                           {
+                               ch.MaMucDich,
+                               ch.MaSoPha,
+                               md.TenMucDich,
+                               lp.TenSoPha
+                           }).ToList();
+
+            foreach (var item in rawData)
+            {
+                var row = new CauHinhRow
+                {
+                    MaMucDich = item.MaMucDich,
+                    MaSoPha = item.MaSoPha,
+                    TenSoPha = item.TenSoPha
+                };
+
+                row.SetInitialName(item.TenMucDich);
+
+                DanhSachCauHinh.Add(row);
+            }
+        }
+        private void SaveCauHinhInlineEdit(CauHinhRow editedRow)
+        {
+            try
+            {
+                string normalizedName = editedRow.TenMucDich.ToLower();
+
+                bool isDuplicate = _db.Mucdiches.Any(m => m.TenMucDich.ToLower() == normalizedName && m.MaMucDich != editedRow.MaMucDich);
+                if (isDuplicate)
+                {
+                    IsSuccessStatus = false;
+                    StatusMessage = $"* Mục đích '{editedRow.TenMucDich}' đã tồn tại.";
+                    editedRow.Revert();
+                    return;
+                }
+
+                var dbItem = _db.Mucdiches.FirstOrDefault(m => m.MaMucDich == editedRow.MaMucDich);
+                if (dbItem != null)
+                {
+                    dbItem.TenMucDich = editedRow.TenMucDich;
+                    _db.SaveChanges();
+
+                    editedRow.OriginalName = editedRow.TenMucDich;
+
+                    IsSuccessStatus = true;
+                    StatusMessage = "CẬP NHẬT MỤC ĐÍCH THÀNH CÔNG!";
+
+                    LoadAllData();
+                }
+            }
+            catch (Exception ex)
+            {
+                _db.ChangeTracker.Clear();
+                IsSuccessStatus = false;
+                StatusMessage = "LỖI CẬP NHẬT MỤC ĐÍCH.";
+                editedRow.Revert();
+                System.Diagnostics.Debug.WriteLine($"Lỗi Sửa Cấu Hình: {ex.Message}");
+            }
         }
 
         private void ExecuteThemBac(object obj)
@@ -302,8 +360,12 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 var associatedConstraints = _db.Cauhinhcapdiens.Where(c => c.MaMucDich == SelectedMucDich.MaMucDich);
                 _db.Cauhinhcapdiens.RemoveRange(associatedConstraints);
 
-                _db.Mucdiches.Remove(SelectedMucDich);
-                _db.SaveChanges();
+                var entityToDelete = _db.Mucdiches.FirstOrDefault(m => m.MaMucDich == SelectedMucDich.MaMucDich);
+                if (entityToDelete != null)
+                {
+                    _db.Mucdiches.Remove(entityToDelete);
+                    _db.SaveChanges();
+                }
 
                 IsSuccessStatus = true;
                 StatusMessage = "XÓA MỤC ĐÍCH THÀNH CÔNG!";

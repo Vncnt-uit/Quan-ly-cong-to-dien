@@ -92,7 +92,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="Tùy chọn thống kê" FontSize="18" FontWeight="Bold" Foreground="#3b5998"/>
+                    <TextBlock Grid.Column="0" Text="Tùy chọn năm thống kê" FontSize="18" FontWeight="Bold" Foreground="#3b5998" HorizontalAlignment="Center" Margin="20,0,0,0"/>
 
                     <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontStyle="Italic" FontWeight="Bold">
                         <TextBlock.Style>
@@ -108,7 +108,7 @@
                     </TextBlock>
                 </Grid>
 
-                <Grid Grid.Row="1" Margin="0,0,0,20">
+                <Grid Grid.Row="1" Margin="0,0,0,10">
                     <StackPanel HorizontalAlignment="Left" Width="250">
                         <TextBlock Text="Năm thống kê" Style="{StaticResource FormLabel}" HorizontalAlignment="Center"/>
 
