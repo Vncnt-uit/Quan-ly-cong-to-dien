@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using Quản_lý_công_tơ_điện.UIModels;
 using System.Collections.ObjectModel;
@@ -9,6 +9,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
     class HoaDonTienDienViewModel : BaseViewModel
     {
         private readonly QuanLyCapDienContext _db;
+
+        public Action RequestGoHome { get; set; }
 
         private int _thang;
         private int _nam;
@@ -62,7 +64,21 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         }
 
         public ICommand LuuCommand { get; }
-        public ICommand HuyCommand { get; }
+        public ICommand ThoatCommand { get; }
+
+        public HoaDonTienDienViewModel(QuanLyCapDienContext context)
+        {
+            _db = context;
+
+            DanhSachChiTiet = new ObservableCollection<ChiTietHoaDonRow>();
+            DanhSachThang = new ObservableCollection<int>(Enumerable.Range(1, 12));
+            DanhSachNam = new ObservableCollection<int>(Enumerable.Range(DateTime.Now.Year - 5, 6));
+
+            LuuCommand = new RelayCommand(ExecuteLuu);
+            ThoatCommand = new RelayCommand(ExecuteThoat);
+
+            PrepareNewForm();
+        }
 
         private void ValidateMaCongTo()
         {
@@ -83,20 +99,6 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
             HasMaCongToError = false;
             MaCongToErrorMessage = string.Empty;
-        }
-
-        public HoaDonTienDienViewModel(QuanLyCapDienContext context)
-        {
-            _db = context;
-
-            DanhSachChiTiet = new ObservableCollection<ChiTietHoaDonRow>();
-            DanhSachThang = new ObservableCollection<int>(Enumerable.Range(1, 12));
-            DanhSachNam = new ObservableCollection<int>(Enumerable.Range(DateTime.Now.Year - 5, 6));
-
-            LuuCommand = new RelayCommand(ExecuteLuu, CanExecuteLuu);
-            HuyCommand = new RelayCommand(ExecuteHuy, CanExecuteHuy);
-
-            PrepareNewForm();
         }
 
         private void PrepareNewForm()
@@ -184,11 +186,11 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 ChiSoMoi = readingData.ChiSoMoi;
                 SanLuongTieuThu = readingData.SanLuongTieuThu;
 
-                CalculateTierMath(readingData.SanLuongTieuThu);
+                TinhTienDien(readingData.SanLuongTieuThu);
             }
         }
 
-        private void CalculateTierMath(int sanLuong)
+        private void TinhTienDien(int sanLuong)
         {
             decimal total = 0;
             int remaining = sanLuong;
@@ -234,30 +236,33 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             TongTien = total;
         }
 
-        private bool CanExecuteHuy(object obj)
-        {
-            return Thang != DateTime.Now.Month ||
-                   Nam != DateTime.Now.Year ||
-                   !string.IsNullOrWhiteSpace(MaCongTo);
-        }
-
-        private bool CanExecuteLuu(object obj)
-        {
-            return !string.IsNullOrWhiteSpace(MaCongTo) &&
-                   !HasMaCongToError &&
-                   string.IsNullOrEmpty(StatusMessage) &&
-                   DanhSachChiTiet.Any() &&
-                   TongTien.HasValue;
-        }
-
-        private void ExecuteHuy(object obj)
+        private void ResetFormFields()
         {
             PrepareNewForm();
             ClearStatus();
         }
 
+        private void ExecuteThoat(object obj)
+        {
+            ResetFormFields();
+            RequestGoHome?.Invoke();
+        }
+
         private void ExecuteLuu(object obj)
         {
+            ValidateMaCongTo();
+            if (HasMaCongToError || string.IsNullOrWhiteSpace(MaCongTo))
+            {
+                IsSuccessStatus = false;
+                StatusMessage = "Vui lòng kiểm tra lại tất cả thông tin.";
+                return;
+            }
+            if (!DanhSachChiTiet.Any() || !TongTien.HasValue)
+            {
+                IsSuccessStatus = false;
+                StatusMessage = "Chưa có chi tiết hóa đơn để lưu.";
+                return;
+            }
             using (var transaction = _db.Database.BeginTransaction())
             {
                 try
@@ -290,9 +295,9 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                     _db.SaveChanges();
                     transaction.Commit();
 
-                    PrepareNewForm();
+                    ResetFormFields();
                     IsSuccessStatus = true;
-                    StatusMessage = $"LẬP HÓA ĐƠN {newMaHoaDon} THÀNH CÔNG!";
+                    StatusMessage = $"LẬP HÓA ĐƠN THÀNH CÔNG!";
                 }
                 catch (Exception ex)
                 {
@@ -315,7 +320,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tải lại BM5: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Lỗi tải lại Hóa đơn tiền điện: {ex.Message}");
             }
         }
     }

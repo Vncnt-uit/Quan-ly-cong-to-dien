@@ -1,4 +1,4 @@
-﻿namespace Quản_lý_công_tơ_điện.Helpers
+﻿namespace Quản_lý_công_tơ_điện.Base
 {
     public interface IRefreshable
     {

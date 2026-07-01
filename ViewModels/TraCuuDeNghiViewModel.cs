@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -8,6 +8,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
     public class TraCuuDeNghiViewModel : BaseViewModel
     {
         private readonly QuanLyCapDienContext _db;
+
+        public Action RequestGoHome { get; set; }
 
         private string _maPhieu;
         private string _hoTen;
@@ -42,14 +44,14 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public ObservableCollection<PhieuSearchResult> SearchResults { get => _searchResults; set { _searchResults = value; OnPropertyChanged(); } }    
 
         public ICommand TraCuuCommand { get; }
-        public ICommand XoaLocCommand { get; }
+        public ICommand ThoatCommand { get; }
 
         public TraCuuDeNghiViewModel(QuanLyCapDienContext context)
         {
             _db = context;
 
-            TraCuuCommand = new RelayCommand(ExecuteTraCuu, CanExecuteTraCuu);
-            XoaLocCommand = new RelayCommand(ExecuteXoaLoc, CanExecuteXoaLoc);
+            TraCuuCommand = new RelayCommand(ExecuteTraCuu);
+            ThoatCommand = new RelayCommand(ExecuteThoat);
 
             LoadInitialData();
         }
@@ -76,8 +78,24 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
         }
 
-        private bool CanExecuteTraCuu(object obj) => true;
-        private bool CanExecuteXoaLoc(object obj) => true;
+        private void ResetFormFields()
+        {
+            MaPhieu = string.Empty;
+            HoTen = string.Empty;
+            DiaChi = string.Empty;
+            TrangThai = string.Empty;
+
+            SelectedSoPha = "";
+            SelectedMucDich = "";
+
+            TuNgay = null;
+            DenNgay = null;
+
+            SearchResults?.Clear();
+
+            StateMessage = string.Empty;
+            IsSuccessStatus = true;
+        }
 
         private void ExecuteTraCuu(object obj)
         {
@@ -154,21 +172,10 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
         }
 
-        private void ExecuteXoaLoc(object obj)
+        private void ExecuteThoat(object obj)
         {
-            MaPhieu = string.Empty;
-            HoTen = string.Empty;
-            DiaChi = string.Empty;
-            TrangThai = string.Empty;
-
-            SelectedSoPha = "";
-            SelectedMucDich = "";
-
-            TuNgay = null;
-            DenNgay = null;
-
-            SearchResults?.Clear();
-            StateMessage = string.Empty;
+            ResetFormFields();
+            RequestGoHome?.Invoke();
         }
         public override void Refresh()
         {
@@ -205,7 +212,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi refresh BM3: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Lỗi khi tải lại Tra cứu phiếu: {ex.Message}");
             }
         }
     } 

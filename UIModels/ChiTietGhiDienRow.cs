@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using System.Windows.Input;
 
@@ -7,8 +7,6 @@ namespace Quản_lý_công_tơ_điện.UIModels
     public class ChiTietGhiDienRow : ObservableObject
     {
         private readonly QuanLyCapDienContext _db;
-
-        public Action<ChiTietGhiDienRow> RequestDelete { get; set; }
         public Action RequestValidation { get; set; }
 
         private int _stt;
@@ -111,15 +109,11 @@ namespace Quản_lý_công_tơ_điện.UIModels
             }
         }
 
-        public ICommand DeleteCommand { get; }
-
         public ChiTietGhiDienRow(QuanLyCapDienContext db, int stt)
         {
             _db = db;
             STT = stt;
-            DeleteCommand = new RelayCommand(ExecuteDeleteRow);
         }
-        private void ExecuteDeleteRow(object obj) => RequestDelete?.Invoke(this);
         public void ClearAutoFill()
         {
             MaBienBan = null;

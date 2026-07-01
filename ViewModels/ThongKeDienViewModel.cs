@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -8,6 +8,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
     class ThongKeDienViewModel : BaseViewModel
     {
         private readonly QuanLyCapDienContext _db;
+
+        public Action RequestGoHome { get; set; }
 
         private int? _selectedNam;
         private string _statusMessage;
@@ -31,7 +33,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public ObservableCollection<ThongKeRowViewModel> DanhSachThongKe { get; set; }
 
         public ICommand ThongKeCommand { get; }
-        public ICommand ResetNamCommand { get; }
+        public ICommand ThoatCommand { get; }
 
         public ThongKeDienViewModel(QuanLyCapDienContext context)
         {
@@ -39,10 +41,10 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             DanhSachThongKe = new ObservableCollection<ThongKeRowViewModel>();
 
             int currentYear = DateTime.Now.Year;
-            DanhSachNam = new ObservableCollection<int>(Enumerable.Range(currentYear - 5, 6).Reverse());
+            DanhSachNam = new ObservableCollection<int>(Enumerable.Range(currentYear - 5, 6));
 
-            ThongKeCommand = new RelayCommand(ExecuteThongKe, CanExecuteThongKe);
-            ResetNamCommand = new RelayCommand(ExecuteResetNam);
+            ThongKeCommand = new RelayCommand(ExecuteThongKe);
+            ThoatCommand = new RelayCommand(ExecuteThoat);
 
             PrepareNewForm();
         }
@@ -80,19 +82,24 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
         }
 
-        private bool CanExecuteThongKe(object obj)
-        {
-            return SelectedNam.HasValue && !HasNamError;
-        }
-
         private void ExecuteThongKe(object obj)
         {
             GenerateStatistics();
         }
 
-        private void ExecuteResetNam(object obj)
+        private void ResetFormFields()
         {
             PrepareNewForm();
+
+            StatusMessage = string.Empty;
+            IsSuccessStatus = true;
+            DanhSachThongKe?.Clear();
+        }
+
+        private void ExecuteThoat(object obj)
+        {
+            ResetFormFields();
+            RequestGoHome?.Invoke();
         }
 
         private void GenerateStatistics()
@@ -176,7 +183,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi refresh BM6: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Lỗi tải lại Thống kê: {ex.Message}");
             }
         }
     }

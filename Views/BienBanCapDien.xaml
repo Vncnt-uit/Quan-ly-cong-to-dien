@@ -19,17 +19,17 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="0,-20,0,40" HorizontalAlignment="Center">
-            <TextBlock FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5">
+            <TextBlock FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5">
                 <TextBlock.Foreground>
                     <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                        <GradientStop Color="#6b87f2" Offset="0"/>
-                        <GradientStop Color="#88a1f4" Offset="0.6"/>
-                        <GradientStop Color="#c3caf8" Offset="1"/>
+                        <GradientStop Color="#305CF7" Offset="0"/>
+                        <GradientStop Color="#7F9EFB" Offset="0.6"/>
+                        <GradientStop Color="#CCE1FF" Offset="1"/>
                     </LinearGradientBrush>
                 </TextBlock.Foreground>
                 <Run Text="Biên bản cấp điện"/>
             </TextBlock>
-            <TextBlock Text="Vui lòng hoàn tất thông tin để thực hiện cấp điện" FontSize="14" Foreground="Black" HorizontalAlignment="Center" FontWeight="SemiBold"/>
+            <TextBlock Text="Vui lòng hoàn tất thông tin để thực hiện cấp điện" FontSize="14" Foreground="#475569" HorizontalAlignment="Center" FontWeight="SemiBold"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="20,0,20,15">
@@ -40,7 +40,7 @@
 
                 <Border Background="#60FFFFFF" BorderBrush="White" BorderThickness="2" CornerRadius="15" Padding="15">
                     <StackPanel>
-                        <TextBlock Text="Mã biên bản" FontSize="20" FontWeight="Bold" Foreground="#3b5998" Margin="0,0,0,10"/>
+                        <TextBlock Text="Mã biên bản" FontSize="25" FontWeight="SemiBold" Foreground="#545997" Margin="0,0,0,20"/>
                         <Border CornerRadius="12.5" Height="35" Background="#E9ECEF" Opacity="0.8">
                             <TextBlock Text="{Binding MaBienBan}" Foreground="#6b87f2" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" Margin="15,0,0,0"/>
                         </Border>
@@ -63,10 +63,10 @@
 
                     <Border Background="#60FFFFFF" BorderBrush="White" BorderThickness="2" CornerRadius="15" Padding="15">
                         <StackPanel>
-                            <TextBlock Text="Thông tin cấp điện" FontSize="20" FontWeight="Bold" Foreground="#3b5998" Margin="0,0,0,15"/>
+                            <TextBlock Text="Thông tin cấp điện" FontSize="25" FontWeight="SemiBold" Foreground="#545997" Margin="0,0,0,20"/>
 
                             <StackPanel Margin="0,0,0,15">
-                                <TextBlock Text="MÃ PHIẾU CẤP ĐIỆN" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                <TextBlock Text="MÃ PHIẾU CẤP ĐIỆN" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                 <Border CornerRadius="12.5" Height="30" Background="White" Padding="3,2">
                                     <Border.Style>
                                         <Style TargetType="Border">
@@ -79,7 +79,11 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
-                                    <ComboBox ItemsSource="{Binding MaPhieuList}" Text="{Binding SelectedMaPhieu, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" IsTextSearchEnabled="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Margin="5,0"/>
+                                    <TextBox Text="{Binding SelectedMaPhieu, UpdateSourceTrigger=LostFocus}" 
+                                             Background="Transparent" 
+                                             BorderThickness="0" 
+                                             VerticalContentAlignment="Center" 
+                                             Padding="8,0,8,0"/>        
                                 </Border>
                                 <TextBlock Text="{Binding MaPhieuErrorMessage}" Foreground="Red" FontSize="11" FontStyle="Italic" Visibility="{Binding HasMaPhieuError, Converter={StaticResource BoolToVis}}" Margin="5,2,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
@@ -91,7 +95,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="THỜI GIAN BẮT ĐẦU CẤP ĐIỆN" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="THỜI GIAN BẮT ĐẦU CẤP ĐIỆN" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="White" BorderBrush="#FFDDDDDD" BorderThickness="1" Padding="3">
                                         <DatePicker SelectedDate="{Binding ThoiGianBatDau, UpdateSourceTrigger=PropertyChanged}" DisplayDateStart="{Binding NgayHienTai}" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="3,2,3,2"/>
                                     </Border>
@@ -99,7 +103,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                                    <TextBlock Text="THỜI GIAN GỬI YÊU CẦU" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="NGÀY LẬP" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="#E9ECEF" BorderBrush="#FFDDDDDD" BorderThickness="1">
                                         <TextBox Text="{Binding NgayLap}" IsReadOnly="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="8,0,8,0" Foreground="#555555"/>
                                     </Border>
@@ -113,14 +117,14 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="HỌ TÊN KHÁCH HÀNG" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="HỌ TÊN KHÁCH HÀNG" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="#E9ECEF" BorderBrush="#FFDDDDDD" BorderThickness="1">
                                         <TextBox Text="{Binding HoTen}" IsReadOnly="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="8,0,8,0" Foreground="#555555"/>
                                     </Border>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                                    <TextBlock Text="SỐ PHA ĐĂNG KÝ" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="SỐ PHA ĐĂNG KÝ" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="#E9ECEF" BorderBrush="#FFDDDDDD" BorderThickness="1">
                                         <TextBox Text="{Binding SoPhaDangKy}" IsReadOnly="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="8,0,8,0" Foreground="#555555"/>
                                     </Border>
@@ -128,9 +132,9 @@
                             </Grid>
 
                             <StackPanel Margin="0,0,0,5">
-                                <TextBlock Text="ĐỊA CHỈ CẤP ĐIỆN" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                <TextBlock Text="ĐỊA CHỈ CẤP ĐIỆN" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                 <Border CornerRadius="12.5" Height="73" Background="#E9ECEF" BorderBrush="#FFDDDDDD" BorderThickness="1">
-                                    <TextBox Text="{Binding DiaChi}" IsReadOnly="True" Background="Transparent" BorderThickness="0" TextWrapping="Wrap" AcceptsReturn="True" Padding="8,8,8,8" Foreground="#555555"/>
+                                    <TextBox Text="{Binding DiaChi}" IsReadOnly="True" Background="Transparent" BorderThickness="0" TextWrapping="Wrap" AcceptsReturn="True" Padding="8,8,8,8" VerticalAlignment="Top" Foreground="#555555"/>
                                 </Border>
                             </StackPanel>
 
@@ -161,7 +165,7 @@
 
                     <Border Background="#60FFFFFF" BorderBrush="White" BorderThickness="2" CornerRadius="15" Padding="15">
                         <StackPanel>
-                            <TextBlock Text="Thông tin công tơ điện" FontSize="20" FontWeight="Bold" Foreground="#3b5998" Margin="0,0,0,15"/>
+                            <TextBlock Text="Thông tin công tơ điện" FontSize="25" FontWeight="SemiBold" Foreground="#545997" Margin="0,0,0,20"/>
 
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
@@ -170,7 +174,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="MÃ CÔNG TƠ ĐIỆN" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="MÃ CÔNG TƠ ĐIỆN" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="White">
                                         <Border.Style>
                                             <Style TargetType="Border">
@@ -189,7 +193,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                                    <TextBlock Text="LOẠI CÔNG TƠ ĐIỆN" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="LOẠI CÔNG TƠ ĐIỆN" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="#E9ECEF" BorderBrush="#FFDDDDDD" BorderThickness="1">
                                         <TextBox Text="{Binding TenLoaiCongTo}" IsReadOnly="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="8,0,8,0" Foreground="#555555"/>
                                     </Border>
@@ -203,7 +207,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="HÃNG SẢN XUẤT" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="HÃNG SẢN XUẤT" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="White">
                                         <Border.Style>
                                             <Style TargetType="Border">
@@ -222,7 +226,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                                    <TextBlock Text="NĂM SẢN XUẤT" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="NĂM SẢN XUẤT" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="White">
                                         <Border.Style>
                                             <Style TargetType="Border">
@@ -248,7 +252,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="CHỈ SỐ BAN ĐẦU" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                    <TextBlock Text="CHỈ SỐ BAN ĐẦU" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                     <Border CornerRadius="12.5" Height="30" Background="White">
                                         <Border.Style>
                                             <Style TargetType="Border">
@@ -269,7 +273,7 @@
 
 
                             <StackPanel Margin="0,0,0,5">
-                                <TextBlock Text="VỊ TRÍ LẮP ĐẶT" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="Black" FontSize="13"/>
+                                <TextBlock Text="VỊ TRÍ LẮP ĐẶT" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
                                 <Border CornerRadius="12.5" Height="73" Background="White">
                                     <Border.Style>
                                         <Style TargetType="Border">
@@ -282,7 +286,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
-                                    <TextBox Text="{Binding ViTriLapDat, UpdateSourceTrigger=LostFocus}" Background="Transparent" BorderThickness="0" TextWrapping="Wrap" AcceptsReturn="True" Padding="8,8,8,8"/>
+                                    <TextBox Text="{Binding ViTriLapDat, UpdateSourceTrigger=LostFocus}" Background="Transparent" BorderThickness="0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Padding="8,8,8,8"/>
                                 </Border>
                                 <TextBlock Text="{Binding ViTriErrorMessage}" Foreground="Red" FontSize="11" FontStyle="Italic" Visibility="{Binding HasViTriError, Converter={StaticResource BoolToVis}}" Margin="5,2,0,0"/>
                             </StackPanel>
@@ -292,7 +296,7 @@
                 </Grid>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,35,0,0">
-                    <Button Content="HỦY" Command="{Binding HuyCommand}" FontWeight="Bold" Width="80" Height="40" Background="White" Margin="0,0,10,0" BorderThickness="0" Cursor="Hand">
+                    <Button Content="✕  THOÁT" Command="{Binding ThoatCommand}" FontWeight="Bold" Width="120" Height="40" Background="White" Margin="0,0,10,0" BorderThickness="0" Cursor="Hand">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="17.5"/>
@@ -305,7 +309,7 @@
 
                     </Button>
 
-                    <Button Content="LẬP BIÊN BẢN ⌲" Command="{Binding LuuCommand}" FontWeight="Bold" Width="140" Height="40" Background="#4e73df" Foreground="White" BorderThickness="0" Cursor="Hand">
+                    <Button Content="LẬP BIÊN BẢN ⌲" Command="{Binding LuuCommand}" FontWeight="Bold" Width="140" Height="40" Background="#4A72FF" Foreground="White" BorderThickness="0" Cursor="Hand">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="17.5"/>

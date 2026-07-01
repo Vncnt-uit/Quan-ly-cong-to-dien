@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 
 namespace Quản_lý_công_tơ_điện.UIModels
 {

@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using Quản_lý_công_tơ_điện.UIModels;
 using System.Collections.ObjectModel;
@@ -11,6 +11,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
     public class PhieuGhiChiSoDienViewModel : BaseViewModel
     {
         private readonly QuanLyCapDienContext _db;
+
+        public Action RequestGoHome { get; set; }
 
         private string _maPhieuGhi;
         private string _kyGhiChiSo;
@@ -37,15 +39,15 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public ObservableCollection<ChiTietGhiDienRow> DanhSachGhiDien { get; set; }
 
         public ICommand LuuCommand { get; }
-        public ICommand HuyCommand { get; }
+        public ICommand ThoatCommand { get; }
 
         public PhieuGhiChiSoDienViewModel(QuanLyCapDienContext context)
         {
             _db = context;
             DanhSachGhiDien = new ObservableCollection<ChiTietGhiDienRow>();
 
-            LuuCommand = new RelayCommand(ExecuteLuu, CanExecuteLuu);
-            HuyCommand = new RelayCommand(ExecuteHuy, CanExecuteHuy);
+            LuuCommand = new RelayCommand(ExecuteLuu);
+            ThoatCommand = new RelayCommand(ExecuteThoat);
 
             PrepareNewForm();
         }
@@ -91,31 +93,9 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
             var newRow = new ChiTietGhiDienRow(_db, DanhSachGhiDien.Count + 1)
             {
-                RequestDelete = RemoveRow,
                 RequestValidation = ValidateGrid
             };
             DanhSachGhiDien.Add(newRow);
-        }
-        private void RemoveRow(ChiTietGhiDienRow rowToDelete)
-        {
-            rowToDelete.RequestValidation = null;
-            
-            DanhSachGhiDien.Remove(rowToDelete);
-
-            for (int i = 0; i < DanhSachGhiDien.Count; i++)
-                DanhSachGhiDien[i].STT = i + 1;
-
-            if (DanhSachGhiDien.Count == 0)
-            {
-                AddEmptyRow();
-            }
-            else if (!string.IsNullOrWhiteSpace(DanhSachGhiDien.Last().MaCongTo))
-            {
-                AddEmptyRow();
-            }
-            StatusMessage = string.Empty;
-            IsSuccessStatus = true;
-            ValidateGrid();
         }
 
         private void ValidateTenNhanVien()
@@ -147,27 +127,22 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             StatusMessage = string.Empty;
             IsSuccessStatus = true;
 
-            while (DanhSachGhiDien.Count > 1)
+            for (int i = DanhSachGhiDien.Count - 2; i >= 0; i--)
             {
-                var lastRow = DanhSachGhiDien.Last();
-                var prevRow = DanhSachGhiDien[DanhSachGhiDien.Count - 2];
-
-                if (string.IsNullOrWhiteSpace(lastRow.MaCongTo) && !prevRow.IsValidRow)
+                if (string.IsNullOrWhiteSpace(DanhSachGhiDien[i].MaCongTo))
                 {
-                    lastRow.RequestValidation = null;
-                    DanhSachGhiDien.Remove(lastRow);
-                }
-                else
-                {
-                    break;
+                    DanhSachGhiDien[i].RequestValidation = null;
+                    DanhSachGhiDien.RemoveAt(i);
                 }
             }
-
+            for (int i = 0; i < DanhSachGhiDien.Count; i++)
+            {
+                DanhSachGhiDien[i].STT = i + 1;
+            }
             foreach (var row in DanhSachGhiDien)
             {
                 row.IsBlockedByParent = false;
             }
-
             var filledRows = DanhSachGhiDien.Where(r => !string.IsNullOrWhiteSpace(r.MaCongTo)).ToList();
             if (!filledRows.Any())
             {
@@ -244,33 +219,42 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             StatusMessage = message;
             IsSuccessStatus = false;
         }
-        private bool CanExecuteHuy(object obj)
-        {
-            return !string.IsNullOrWhiteSpace(NhanVienGhi) || HasNhanVienGhiError ||
-                   !string.IsNullOrEmpty(StatusMessage) ||
-                   DanhSachGhiDien.Any(r => !string.IsNullOrWhiteSpace(r.MaCongTo) || r.ChiSoMoi != null);
-        }
 
-        private bool CanExecuteLuu(object obj)
-        {
-            return string.IsNullOrEmpty(StatusMessage) &&
-                   !string.IsNullOrWhiteSpace(NhanVienGhi) &&
-                   DanhSachGhiDien.Any(r => r.IsValidRow);
-        }
-
-        private void ExecuteHuy(object obj)
+        private void ResetFormFields()
         {
             NhanVienGhi = string.Empty;
             StatusMessage = string.Empty;
+            IsSuccessStatus = true;
 
             PrepareNewForm();
         }
 
+        private void ExecuteThoat(object obj)
+        {
+            ResetFormFields();
+            RequestGoHome?.Invoke();
+        }
+
         private void ExecuteLuu(object obj)
         {
+            ValidateTenNhanVien();
+            ValidateGrid();
+            var validRows = DanhSachGhiDien.Where(r => r.IsValidRow).ToList();
+            if (HasNhanVienGhiError || !string.IsNullOrEmpty(StatusMessage))
+            {
+                if (string.IsNullOrEmpty(StatusMessage))
+                {
+                    SetError("Vui lòng kiểm tra lại tất cả thông tin.");
+                }
+                return;
+            }
+            if (!validRows.Any())
+            {
+                SetError("Vui lòng nhập tất cả thông tin ghi điện hợp lệ.");
+                return;
+            }
             try
             {
-                var validRows = DanhSachGhiDien.Where(r => r.IsValidRow).ToList();
                 string formattedName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(NhanVienGhi.Trim().ToLower());
 
                 using (var transaction = _db.Database.BeginTransaction())
@@ -303,25 +287,25 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                         _db.SaveChanges();
                         transaction.Commit();
 
-                        ExecuteHuy(null);
+                        ResetFormFields();
 
-                        StatusMessage = "Lưu phiếu ghi chỉ số thành công!";
+                        StatusMessage = "LƯU PHIẾU GHI CHỈ SỐ THÀNH CÔNG!";
                         IsSuccessStatus = true;
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        StatusMessage = "Lỗi trong quá trình ghi vào cơ sở dữ liệu.";
+                        StatusMessage = "ĐÃ XẢY RA LỖI TRONG QUÁ TRÌNH LƯU PHIẾU.";
                         IsSuccessStatus = false;
-                        System.Diagnostics.Debug.WriteLine($"Lỗi Database (Lưu BM4): {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"Lỗi Database (Lưu Phiếu ghi điện): {ex.Message}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                StatusMessage = "Đã xảy ra lỗi hệ thống.";
+                StatusMessage = "ĐÃ XẢY RA LỖI HỆ THỐNG.";
                 IsSuccessStatus = false;
-                System.Diagnostics.Debug.WriteLine($"Lỗi Hệ Thống (Lưu BM4): {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Lỗi Hệ Thống (Lưu Phiếu ghi điện): {ex.Message}");
             }
         }
     }

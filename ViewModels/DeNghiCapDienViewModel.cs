@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -9,6 +9,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
     public class DeNghiCapDienViewModel : BaseViewModel
     {
         private readonly QuanLyCapDienContext _db;
+
+        public Action RequestGoHome { get; set; }
 
         private string _cccd;
         private string _hoTen;
@@ -40,6 +42,12 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         private bool _hasDiaChiError;
         private string _diaChiErrorMessage;
 
+        private bool _hasMucDichError;
+        private string _mucDichErrorMessage;
+
+        private bool _hasSoPhaError;
+        private string _soPhaErrorMessage;
+
         private string _statusMessage;
         private bool _isSuccessStatus;
 
@@ -51,7 +59,6 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public string SoDienThoai { get => _soDienThoai; set { _soDienThoai = value; OnPropertyChanged(); ClearStatus(); ValidateSdt(); } }
         public string Email { get => _email; set { _email = value; OnPropertyChanged(); ClearStatus(); ValidateEmail(); } }
         public string DiaChi { get => _diaChi; set { _diaChi = value; OnPropertyChanged(); ClearStatus(); ValidateDiaChi();  } }
-        public string SelectedSoPha { get => _selectedSoPha; set { _selectedSoPha = value; OnPropertyChanged(); ClearStatus(); } }
         public int? NamSinh
         {
             get => _namSinh;
@@ -72,6 +79,28 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 OnPropertyChanged();
                 ClearStatus();
                 LoadSoPhaList();
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    HasMucDichError = false;
+                    MucDichErrorMessage = string.Empty;
+                }
+            }
+        }
+        public string SelectedSoPha
+        {
+            get => _selectedSoPha;
+            set
+            {
+                _selectedSoPha = value;
+                OnPropertyChanged();
+                ClearStatus();
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    HasSoPhaError = false;
+                    SoPhaErrorMessage = string.Empty;
+                }
             }
         }
         public string MaYeuCau { get => _maYeuCau; set { _maYeuCau = value; OnPropertyChanged(); } }
@@ -95,6 +124,12 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public bool HasDiaChiError { get => _hasDiaChiError; set { _hasDiaChiError = value; OnPropertyChanged(); } }
         public string DiaChiErrorMessage { get => _diaChiErrorMessage; set { _diaChiErrorMessage = value; OnPropertyChanged(); } }
 
+        public bool HasMucDichError { get => _hasMucDichError; set { _hasMucDichError = value; OnPropertyChanged(); }  }
+        public string MucDichErrorMessage { get => _mucDichErrorMessage; set { _mucDichErrorMessage = value; OnPropertyChanged(); }  }
+
+        public bool HasSoPhaError { get => _hasSoPhaError; set { _hasSoPhaError = value; OnPropertyChanged(); } }
+        public string SoPhaErrorMessage { get => _soPhaErrorMessage; set { _soPhaErrorMessage = value; OnPropertyChanged(); } }
+
         public string StatusMessage { get => _statusMessage; set { _statusMessage = value; OnPropertyChanged(); } }
         public bool IsSuccessStatus { get => _isSuccessStatus; set { _isSuccessStatus = value; OnPropertyChanged(); } }
         
@@ -102,14 +137,14 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public List<Loaipha> SoPhaList { get => _soPhaList; set { _soPhaList = value; OnPropertyChanged(); } }
 
         public ICommand GuiCommand { get; }
-        public ICommand HuyCommand { get; }
+        public ICommand ThoatCommand { get; }
 
         public DeNghiCapDienViewModel(QuanLyCapDienContext context)
         {
             _db = context;
 
-            GuiCommand = new RelayCommand(ExecuteGui, CanExecuteGui);
-            HuyCommand = new RelayCommand(ExecuteHuy, CanExecuteHuy);
+            GuiCommand = new RelayCommand(ExecuteGui);
+            ThoatCommand = new RelayCommand(ExecuteThoat);
 
             LoadInitialData();
         }
@@ -251,6 +286,30 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             HasDiaChiError = false;
             DiaChiErrorMessage = string.Empty;
         }
+        private void ValidateComboBoxes()
+        {
+            if (string.IsNullOrWhiteSpace(SelectedMucDich))
+            {
+                HasMucDichError = true;
+                MucDichErrorMessage = "* Vui lòng chọn mục đích.";
+            }
+            else
+            {
+                HasMucDichError = false;
+                MucDichErrorMessage = string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(SelectedSoPha))
+            {
+                HasSoPhaError = true;
+                SoPhaErrorMessage = "* Vui lòng chọn số pha.";
+            }
+            else
+            {
+                HasSoPhaError = false;
+                SoPhaErrorMessage = string.Empty;
+            }
+        }
         private void ClearStatus()
         {
             if (!string.IsNullOrEmpty(StatusMessage))
@@ -277,7 +336,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
         private void PrepareNewForm()
         {
-            ThoiGian = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+            ThoiGian = DateTime.Now.ToString("dd/MM/yyyy - HH:mm:ss");
             GenerateMaYeuCau();
 
             HasCccdError = false;
@@ -286,6 +345,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             HasHoTenError = false;
             HasDiaChiError = false;
             HasNamSinhError = false;
+            HasMucDichError = false;
+            HasSoPhaError = false;
 
             CccdErrorMessage = string.Empty;
             EmailErrorMessage = string.Empty;
@@ -293,6 +354,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             HoTenErrorMessage = string.Empty;
             DiaChiErrorMessage = string.Empty;
             NamSinhErrorMessage = string.Empty;
+            MucDichErrorMessage = string.Empty;
+            SoPhaErrorMessage = string.Empty;
         }
 
         private void GenerateMaYeuCau()
@@ -338,31 +401,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 }
             }
         }
-        private bool CanExecuteHuy(object obj)
-        {
-            return !string.IsNullOrWhiteSpace(Cccd) || HasCccdError ||
-                   !string.IsNullOrWhiteSpace(HoTen) || HasHoTenError ||
-                   NamSinh.HasValue || HasNamSinhError ||
-                   !string.IsNullOrWhiteSpace(SoDienThoai) || HasSdtError ||
-                   !string.IsNullOrWhiteSpace(Email) || HasEmailError ||
-                   !string.IsNullOrWhiteSpace(DiaChi) || HasDiaChiError ||
-                   !string.IsNullOrWhiteSpace(SelectedMucDich) ||
-                   !string.IsNullOrWhiteSpace(SelectedSoPha);
-        }
 
-        private bool CanExecuteGui(object obj)
-        {
-            return !string.IsNullOrWhiteSpace(Cccd) && !HasCccdError &&
-                   !string.IsNullOrWhiteSpace(HoTen) && !HasHoTenError &&
-                   NamSinh.HasValue && !HasNamSinhError &&
-                   !string.IsNullOrWhiteSpace(SoDienThoai) && !HasSdtError &&
-                   !string.IsNullOrWhiteSpace(Email) && !HasEmailError &&
-                   !string.IsNullOrWhiteSpace(DiaChi) && !HasDiaChiError &&
-                   !string.IsNullOrWhiteSpace(SelectedMucDich) &&
-                   !string.IsNullOrWhiteSpace(SelectedSoPha);
-        }
-
-        private void ExecuteHuy(object obj)
+        private void ResetFormFields()
         {
             Cccd = string.Empty;
             HoTen = string.Empty;
@@ -373,19 +413,43 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             SelectedMucDich = null;
 
             StatusMessage = string.Empty;
+            IsSuccessStatus = true;
+
             PrepareNewForm();
+        }
+
+        private void ExecuteThoat(object obj)
+        {
+            ResetFormFields();
+            RequestGoHome?.Invoke();
         }
 
         private void ExecuteGui(object obj)
         {
+            ValidateCccd();
+            ValidateHoTen();
+            ValidateNamSinh();
+            ValidateSdt();
+            ValidateEmail();
+            ValidateDiaChi();
+            ValidateComboBoxes();
+            
+            if (HasCccdError || HasHoTenError || HasNamSinhError || HasSdtError ||
+                HasEmailError || HasDiaChiError || HasMucDichError || HasSoPhaError)
+            {
+                IsSuccessStatus = false;
+                StatusMessage = "Vui lòng kiểm tra lại các thông tin chưa hợp lệ.";
+                return;
+            }
             try
             {
                 string formattedName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(HoTen.Trim().ToLower());
+                DateTime parsedTime = DateTime.ParseExact(ThoiGian, "dd/MM/yyyy - HH:mm:ss", CultureInfo.InvariantCulture);
 
                 var newPhieu = new Phieucapdien
                 {
                     MaPhieu = MaYeuCau,
-                    ThoiGianGui = DateTime.Now,
+                    ThoiGianGui = parsedTime,
                     Cccd = Cccd.Trim(),
                     HoTen = formattedName,
                     NamSinh = NamSinh,
@@ -400,7 +464,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 _db.Phieucapdiens.Add(newPhieu);
                 _db.SaveChanges();
 
-                ExecuteHuy(null);
+                ResetFormFields();
 
                 IsSuccessStatus = true;
                 StatusMessage = $"ĐÃ GỬI ĐỀ NGHỊ THÀNH CÔNG!";
@@ -408,7 +472,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             catch (Exception ex)
             {
                 IsSuccessStatus = false;
-                StatusMessage = $"CÓ LỖI XẢY RA KHI GỬI ĐỀ NGHỊ: {ex.Message}";
+                StatusMessage = $"CÓ LỖI XẢY RA KHI GỬI ĐỀ NGHỊ!";
 
                 System.Diagnostics.Debug.WriteLine($"Lỗi khi gửi đề nghị: {ex.Message}");
             }
@@ -421,7 +485,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tải lại BM1: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Lỗi tải lại Phiếu đề nghị: {ex.Message}");
             }
         }
     }

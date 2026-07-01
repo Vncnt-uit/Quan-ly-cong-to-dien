@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="Quản_lý_công_tơ_điện.Views.TrangChuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="⚡" FontSize="100" HorizontalAlignment="Center"/>
+            <TextBlock FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,10">
+                <TextBlock.Foreground>
+                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                        <GradientStop Color="#305CF7" Offset="0"/>
+                        <GradientStop Color="#7F9EFB" Offset="0.6"/>
+                        <GradientStop Color="#CCE1FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </TextBlock.Foreground>
+                <Run Text="HỆ THỐNG QUẢN LÝ CẤP ĐIỆN"/>
+            </TextBlock>
+            <TextBlock Text="Vui lòng chọn một tác vụ từ thanh menu bên trái." 
+                       FontSize="20" Foreground="#464555" 
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

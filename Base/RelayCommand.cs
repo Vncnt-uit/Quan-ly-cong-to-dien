@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
-namespace Quản_lý_công_tơ_điện.Helpers
+namespace Quản_lý_công_tơ_điện.Base
 {
     public class RelayCommand : ICommand
     {

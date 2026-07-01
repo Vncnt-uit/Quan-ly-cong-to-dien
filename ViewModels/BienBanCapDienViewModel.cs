@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using System.Windows.Input;
 
@@ -7,6 +7,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
     public class BienBanCapDienViewModel : BaseViewModel
     {
         private readonly QuanLyCapDienContext _db;
+
+        public Action RequestGoHome { get; set; }
 
         private string _maBienBan;
         private string _ngayLap;
@@ -95,14 +97,14 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public List<string> MaPhieuList { get => _maPhieuList; set { _maPhieuList = value; OnPropertyChanged(); } }
 
         public ICommand LuuCommand { get; }
-        public ICommand HuyCommand { get; }
+        public ICommand ThoatCommand { get; }
 
         public BienBanCapDienViewModel(QuanLyCapDienContext context)
         {
             _db = context;
 
-            LuuCommand = new RelayCommand(ExecuteLuu, CanExecuteLuu);
-            HuyCommand = new RelayCommand(ExecuteHuy, CanExecuteHuy);
+            LuuCommand = new RelayCommand(ExecuteLuu);
+            ThoatCommand = new RelayCommand(ExecuteThoat);
 
             LoadInitialData();
         }
@@ -117,7 +119,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             if (MaPhieuList == null || !MaPhieuList.Contains(SelectedMaPhieu.Trim()))
             {
                 HasMaPhieuError = true;
-                MaPhieuErrorMessage = "* Mã phiếu không tồn tại hoặc đã xử lý.";
+                MaPhieuErrorMessage = "* Mã phiếu không tồn tại hoặc đã được xử lý.";
                 return;
             }
             HasMaPhieuError = false;
@@ -348,30 +350,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
         }
 
-        private bool CanExecuteHuy(object obj)
-        {
-            return !string.IsNullOrWhiteSpace(SelectedMaPhieu) || HasMaPhieuError ||
-                   !string.IsNullOrWhiteSpace(MaCongTo) || HasMaCongToError ||
-                   !string.IsNullOrWhiteSpace(HangSanXuat) || HasHangSanXuatError ||
-                   !string.IsNullOrWhiteSpace(NamSanXuat) || HasNamSanXuatError ||
-
-                   (!string.IsNullOrWhiteSpace(ChiSoBanDau) && ChiSoBanDau != "0") || HasChiSoError ||
-                   !string.IsNullOrWhiteSpace(ViTriLapDat) || HasViTriError ||
-                   (ThoiGianBatDau.HasValue && ThoiGianBatDau.Value.Date != DateTime.Today) || HasDateError;
-        }
-
-        private bool CanExecuteLuu(object obj)
-        {
-            return !string.IsNullOrWhiteSpace(SelectedMaPhieu) && !HasMaPhieuError &&
-                   !string.IsNullOrWhiteSpace(MaCongTo) && !HasMaCongToError &&
-                   !string.IsNullOrWhiteSpace(HangSanXuat) && !HasHangSanXuatError &&
-                   !string.IsNullOrWhiteSpace(NamSanXuat) && !HasNamSanXuatError &&
-                   !string.IsNullOrWhiteSpace(ChiSoBanDau) && !HasChiSoError &&
-                   !string.IsNullOrWhiteSpace(ViTriLapDat) && !HasViTriError &&
-                   !HasDateError && !string.IsNullOrWhiteSpace(_maLoaiCongToDB);
-        }
-
-        private void ExecuteHuy(object obj)
+        private void ResetFormFields()
         {
             SelectedMaPhieu = string.Empty;
             MaCongTo = string.Empty;
@@ -386,11 +365,34 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             _maLoaiCongToDB = string.Empty;
 
             StatusMessage = string.Empty;
+            IsSuccessStatus = true;
+
             PrepareNewForm();
+        }
+
+        private void ExecuteThoat(object obj)
+        {
+            ResetFormFields();
+            RequestGoHome?.Invoke();
         }
 
         private void ExecuteLuu(object obj)
         {
+            ValidateMaPhieu();
+            ValidateThoiGianBatDau();
+            ValidateMaCongTo();
+            ValidateHangSanXuat();
+            ValidateNamSanXuat();
+            ValidateChiSoBanDau();
+            ValidateViTriLapDat();
+
+            if (HasMaPhieuError || HasDateError || HasMaCongToError || HasHangSanXuatError ||
+                HasNamSanXuatError || HasChiSoError || HasViTriError)
+            {
+                IsSuccessStatus = false;
+                StatusMessage = "Vui lòng kiểm tra lại các thông tin chưa hợp lệ.";
+                return;
+            }
             try
             {
                 var newBienBan = new Bienbancapdien
@@ -415,7 +417,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 
                 LoadInitialData();
 
-                ExecuteHuy(null);
+                ResetFormFields();
 
                 IsSuccessStatus = true;
                 StatusMessage = $"LẬP BIÊN BẢN THÀNH CÔNG!";
@@ -437,7 +439,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tải lại BM2: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Lỗi tải lại Biên bản cấp điện: {ex.Message}");
             }
         }
     }

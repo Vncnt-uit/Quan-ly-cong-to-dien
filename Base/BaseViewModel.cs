@@ -1,6 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
-
-namespace Quản_lý_công_tơ_điện.ViewModels
+﻿namespace Quản_lý_công_tơ_điện.Base
 {
     public class BaseViewModel : ObservableObject, IRefreshable
     {

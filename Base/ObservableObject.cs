@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Quản_lý_công_tơ_điện.Helpers
+namespace Quản_lý_công_tơ_điện.Base
 {
     public class ObservableObject : INotifyPropertyChanged
     {

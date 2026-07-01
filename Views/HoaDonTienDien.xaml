@@ -28,12 +28,12 @@
         <Style TargetType="DataGridColumnHeader">
             <Setter Property="Background" Value="#d6e4ff"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#3b5998"/>
+            <Setter Property="Foreground" Value="#001A42"/>
             <Setter Property="MinHeight" Value="45"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="BorderBrush" Value="#bacdf2"/>
-            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="ContentTemplate">
                 <Setter.Value>
@@ -46,7 +46,7 @@
 
         <Style x:Key="FormLabel" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="Foreground" Value="#424754"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Margin" Value="5,0,0,5"/>
         </Style>
@@ -70,15 +70,15 @@
             <TextBlock FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10">
                 <TextBlock.Foreground>
                     <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                        <GradientStop Color="#6b87f2" Offset="0"/>
-                        <GradientStop Color="#88a1f4" Offset="0.6"/>
-                        <GradientStop Color="#c3caf8" Offset="1"/>
+                        <GradientStop Color="#305CF7" Offset="0"/>
+                        <GradientStop Color="#7F9EFB" Offset="0.6"/>
+                        <GradientStop Color="#CCE1FF" Offset="1"/>
                     </LinearGradientBrush>
                 </TextBlock.Foreground>
                 <Run Text="Lập hóa đơn tiền điện"/>
             </TextBlock>
             <TextBlock Text="Lập và phát hành hóa đơn thanh toán định kỳ dựa trên dữ liệu chỉ số công tơ và quy định giá bán lẻ điện." 
-                       FontSize="15" Foreground="#555555" HorizontalAlignment="Center" FontWeight="SemiBold"/>
+                       FontSize="14" Foreground="#464555" HorizontalAlignment="Center" FontWeight="SemiBold"/>
         </StackPanel>
 
         <Border Grid.Row="1" Background="#60FFFFFF" BorderBrush="#ffffff" BorderThickness="2" CornerRadius="15" Padding="30">
@@ -94,27 +94,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="0,0,0,20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="Lập hóa đơn tiền điện" FontSize="18" FontWeight="Bold" Foreground="#3b5998"/>
-
-                    <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="#e74a3b"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsSuccessStatus}" Value="True">
-                                        <Setter Property="Foreground" Value="#1cc88a"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </Grid>
+                <TextBlock Grid.Row="0" Text="Lập hóa đơn tiền điện" FontSize="25" FontWeight="SemiBold" Foreground="#545997" Margin="0,0,0,20"/>
 
                 <Grid Grid.Row="1" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
@@ -124,10 +104,10 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Nhập thông tin chỉ số" FontSize="16" FontWeight="Bold" Foreground="#1e293b" Margin="0,0,0,15"/>
+                        <TextBlock Text="Nhập thông tin chỉ số" FontSize="16" FontWeight="SemiBold" Foreground="#0058BE" Margin="0,0,0,10"/>
 
                         <TextBlock Text="Kỳ ghi chỉ số" Style="{StaticResource FormLabel}"/>
-                        <Grid Margin="0,0,0,10">
+                        <Grid Margin="0,10,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="10"/>
@@ -135,7 +115,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Tháng" FontSize="11" Foreground="#64748b" Margin="5,0,0,2"/>
+                                <TextBlock Text="Tháng" FontSize="11" Foreground="#424754" Margin="5,0,0,2"/>
                                 <Border CornerRadius="16" Height="34" Background="White" BorderBrush="#cbd5e1" BorderThickness="1" Padding="6,5">
                                     <ComboBox ItemsSource="{Binding DanhSachThang}" SelectedItem="{Binding Thang}" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" IsEditable="True" IsReadOnly="True" ForceCursor="True" Cursor="Arrow">
                                         <ComboBox.Resources>
@@ -150,7 +130,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Năm" FontSize="11" Foreground="#64748b" Margin="5,0,0,2"/>
+                                <TextBlock Text="Năm" FontSize="11" Foreground="#424754" Margin="5,0,0,2"/>
                                 <Border CornerRadius="16" Height="34" Background="White" BorderBrush="#cbd5e1" BorderThickness="1" Padding="6,5">
                                     <ComboBox ItemsSource="{Binding DanhSachNam}" SelectedItem="{Binding Nam}" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" IsEditable="True" IsReadOnly="True" ForceCursor="True" Cursor="Arrow">
                                         <ComboBox.Resources>
@@ -177,11 +157,7 @@
                                 </Style>
                             </Border.Style>
 
-                            <ComboBox ItemsSource="{Binding DanhSachMaCongTo}" 
-                                      Text="{Binding MaCongTo, UpdateSourceTrigger=PropertyChanged}" 
-                                      IsEditable="True" 
-                                      IsTextSearchEnabled="True"
-                                      Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Margin="5,4">
+                            <ComboBox ItemsSource="{Binding DanhSachMaCongTo}" Text="{Binding MaCongTo, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" IsTextSearchEnabled="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Margin="5,4">
                             </ComboBox>
                         </Border>
                         <TextBlock Text="{Binding MaCongToErrorMessage}" Foreground="#e74a3b" FontSize="11" FontStyle="Italic" Visibility="{Binding HasMaCongToError, Converter={StaticResource BoolToVis}}" Margin="10,0,0,10" MinHeight="15"/>
@@ -194,32 +170,32 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Chỉ số cũ" Style="{StaticResource FormLabel}"/>
+                                <TextBlock Text="Chỉ số cũ" Style="{StaticResource FormLabel}" Margin="0,10,0,5"/>
                                 <Border Style="{StaticResource ReadOnlyPill}">
-                                    <TextBox Text="{Binding ChiSoCu}" IsReadOnly="True" Background="Transparent" BorderThickness="0" Padding="0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="Black"/>
+                                    <TextBox Text="{Binding ChiSoCu}" IsReadOnly="True" Background="Transparent"  BorderThickness="0" Padding="15,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontWeight="SemiBold" Foreground="Black"/>
                                 </Border>
                             </StackPanel>
 
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Chỉ số mới" Style="{StaticResource FormLabel}"/>
+                                <TextBlock Text="Chỉ số mới" Style="{StaticResource FormLabel}" Margin="0,10,0,5"/>
                                 <Border Style="{StaticResource ReadOnlyPill}">
-                                    <TextBox Text="{Binding ChiSoMoi}" IsReadOnly="True" Background="Transparent" BorderThickness="0" Padding="0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="Black"/>
+                                    <TextBox Text="{Binding ChiSoMoi}" IsReadOnly="True" Background="Transparent" BorderThickness="0" Padding="15,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" FontWeight="SemiBold" Foreground="Black"/>
                                 </Border>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Thông tin khách hàng" FontSize="16" FontWeight="Bold" Foreground="#1e293b" Margin="0,0,0,15"/>
+                        <TextBlock Text="Thông tin khách hàng" FontSize="16" FontWeight="SemiBold" Foreground="#0B1C30" Margin="0,20,0,15"/>
 
                         <TextBlock Text="Họ tên khách hàng" Style="{StaticResource FormLabel}"/>
                         <Border Style="{StaticResource ReadOnlyPill}">
-                            <TextBox Text="{Binding HoTenKhachHang}" IsReadOnly="True" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="Black"/>
+                            <TextBox Text="{Binding HoTenKhachHang}" IsReadOnly="True" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center" FontWeight="SemiBold" Foreground="Black"/>
                         </Border>
 
                         <TextBlock Text="Địa chỉ lắp đặt" Style="{StaticResource FormLabel}"/>
                         <Border Style="{StaticResource ReadOnlyPill}" Margin="0,0,0,23">
-                            <TextBox Text="{Binding DiaChiLapDat}" IsReadOnly="True" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="Black"/>
+                            <TextBox Text="{Binding DiaChiLapDat}" IsReadOnly="True" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center" FontWeight="SemiBold" Foreground="Black"/>
                         </Border>
 
                         <Border CornerRadius="16" Background="#eef2ff" BorderBrush="#c7d2fe" BorderThickness="1" Padding="15,12">
@@ -231,8 +207,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="SẢN LƯỢNG TIÊU THỤ" FontSize="10" FontWeight="Bold" Foreground="#3b5998" HorizontalAlignment="Center"/>
-                                    <Border Background="White" CornerRadius="12" Margin="0,6,0,0" Padding="0,3" MinWidth="100" HorizontalAlignment="Center">
+                                    <TextBlock Text="SẢN LƯỢNG TIÊU THỤ" FontSize="10" FontWeight="SemiBold" Foreground="#0058BE" HorizontalAlignment="Center"/>
+                                    <Border Background="White" CornerRadius="12" Margin="0,6,0,0" Padding="0,3" MinWidth="150" HorizontalAlignment="Center">
                                         <TextBlock Text="{Binding SanLuongTieuThu}" FontSize="14" FontWeight="Bold" Foreground="#3b82f6" HorizontalAlignment="Center"/>
                                     </Border>
                                 </StackPanel>
@@ -240,8 +216,8 @@
                                 <Rectangle Grid.Column="1" Width="1" Fill="#cbd5e1" Margin="10,0"/>
 
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                    <TextBlock Text="TỔNG TIỀN THANH TOÁN" FontSize="10" FontWeight="Bold" Foreground="#b45309" HorizontalAlignment="Center"/>
-                                    <Border Background="White" CornerRadius="12" Margin="0,6,0,0" Padding="0,3" MinWidth="130" HorizontalAlignment="Center">
+                                    <TextBlock Text="TỔNG TIỀN THANH TOÁN" FontSize="10" FontWeight="SemiBold" Foreground="#924700" HorizontalAlignment="Center"/>
+                                    <Border Background="White" CornerRadius="12" Margin="0,6,0,0" Padding="0,3" MinWidth="170" HorizontalAlignment="Center">
                                         <TextBlock Text="{Binding TongTienText}" FontSize="14" FontWeight="Bold" Foreground="#d97706" HorizontalAlignment="Center"/>
                                     </Border>
                                 </StackPanel>
@@ -256,7 +232,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="Chi tiết hóa đơn" FontSize="16" FontWeight="Bold" Foreground="#1e293b" Margin="0,0,0,10"/>
+                    <TextBlock Grid.Row="0" Text="Chi tiết hóa đơn" FontSize="16" FontWeight="SemiBold" Foreground="#0B1C30" Margin="0,0,0,10"/>
 
                     <Border Grid.Row="1" BorderBrush="#bacdf2" BorderThickness="1" CornerRadius="12" VerticalAlignment="Top">
                         <Grid>
@@ -269,14 +245,7 @@
                                 <Border Background="White"/>
                                 <Border Height="46" Background="#d6e4ff" VerticalAlignment="Top" CornerRadius="11,11,0,0"/>
 
-                                <DataGrid ItemsSource="{Binding DanhSachChiTiet}" 
-                                          AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                                          GridLinesVisibility="All" HorizontalGridLinesBrush="#bacdf2" VerticalGridLinesBrush="#bacdf2"
-                                          Background="Transparent" BorderThickness="0" 
-                                          RowHeight="45" AlternatingRowBackground="#eff4fd" VerticalContentAlignment="Center" 
-                                          HorizontalScrollBarVisibility="Disabled" 
-                                          VirtualizingPanel.ScrollUnit="Pixel">
-
+                                <DataGrid ItemsSource="{Binding DanhSachChiTiet}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="None" HorizontalGridLinesBrush="#bacdf2" VerticalGridLinesBrush="#bacdf2" Background="Transparent" BorderThickness="0" RowHeight="45" AlternatingRowBackground="#F8F9FF" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.ScrollUnit="Pixel">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="BẬC" Binding="{Binding BacText}" Width="1.5*" ElementStyle="{StaticResource CenterText}"/>
                                         <DataGridTextColumn Header="ĐƠN GIÁ" Binding="{Binding DonGia, StringFormat=\{0:N0\}}" Width="1.5*" ElementStyle="{StaticResource CenterText}"/>
@@ -296,29 +265,49 @@
                     </Border>
                 </Grid>
 
-                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                    <Button Content="HỦY" Command="{Binding HuyCommand}" FontWeight="Bold" Width="110" Height="40" Background="White" Margin="0,0,15,0" BorderThickness="0" Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="20"/>
-                            </Style>
-                        </Button.Resources>
-                        <Button.Effect>
-                            <DropShadowEffect Color="Black" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.1"/>
-                        </Button.Effect>
-                    </Button>
+                <Grid Grid.Row="3" Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                    <Button Content="💾 LẬP HÓA ĐƠN" Command="{Binding LuuCommand}" FontWeight="Bold" Width="150" Height="40" Background="#2563eb" Foreground="White" BorderThickness="0" Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="20"/>
+                    <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="20,0,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#e74a3b"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSuccessStatus}" Value="True">
+                                        <Setter Property="Foreground" Value="#1cc88a"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
                             </Style>
-                        </Button.Resources>
-                        <Button.Effect>
-                            <DropShadowEffect Color="#2563eb" Direction="270" ShadowDepth="3" BlurRadius="12" Opacity="0.4"/>
-                        </Button.Effect>
-                    </Button>
-                </StackPanel>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="✕  THOÁT" Command="{Binding ThoatCommand}" FontWeight="Bold" Width="120" Height="40" Background="White" Margin="0,0,15,0" BorderThickness="0" Cursor="Hand">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="20"/>
+                                </Style>
+                            </Button.Resources>
+                            <Button.Effect>
+                                <DropShadowEffect Color="Black" Direction="270" ShadowDepth="2" BlurRadius="10" Opacity="0.1"/>
+                            </Button.Effect>
+                        </Button>
+
+                        <Button Content="🧾 LẬP HÓA ĐƠN" Command="{Binding LuuCommand}" FontWeight="Bold" Width="150" Height="40" Background="#0058BE" Foreground="White" BorderThickness="0" Cursor="Hand">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="20"/>
+                                </Style>
+                            </Button.Resources>
+                            <Button.Effect>
+                                <DropShadowEffect Color="#2563eb" Direction="270" ShadowDepth="3" BlurRadius="12" Opacity="0.4"/>
+                            </Button.Effect>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
             </Grid>
         </Border>

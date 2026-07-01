@@ -1,4 +1,4 @@
-﻿using Quản_lý_công_tơ_điện.Helpers;
+﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using System.Windows.Input;
 
@@ -7,6 +7,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
     public class DanhMucViewModel : ObservableObject
     {
         private readonly QuanLyCapDienContext _db;
+        private readonly TrangChuViewModel _trangChuViewModel;
 
         private readonly DeNghiCapDienViewModel _bm1ViewModel;
         private readonly BienBanCapDienViewModel _bm2ViewModel;
@@ -33,7 +34,27 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 CommandManager.InvalidateRequerySuggested();
             }
         }
+        private bool _isMenu1Checked;
+        public bool IsMenu1Checked { get => _isMenu1Checked; set { _isMenu1Checked = value; OnPropertyChanged(); } }
 
+        private bool _isMenu2Checked;
+        public bool IsMenu2Checked { get => _isMenu2Checked; set { _isMenu2Checked = value; OnPropertyChanged(); } }
+
+        private bool _isMenu3Checked;
+        public bool IsMenu3Checked { get => _isMenu3Checked; set { _isMenu3Checked = value; OnPropertyChanged(); } }
+
+        private bool _isMenu4Checked;
+        public bool IsMenu4Checked { get => _isMenu4Checked; set { _isMenu4Checked = value; OnPropertyChanged(); } }
+
+        private bool _isMenu5Checked;
+        public bool IsMenu5Checked { get => _isMenu5Checked; set { _isMenu5Checked = value; OnPropertyChanged(); } }
+
+        private bool _isMenu6Checked;
+        public bool IsMenu6Checked { get => _isMenu6Checked; set { _isMenu6Checked = value; OnPropertyChanged(); } }
+
+        private bool _isMenuCauHinhChecked;
+        public bool IsMenuCauHinhChecked { get => _isMenuCauHinhChecked; set { _isMenuCauHinhChecked = value; OnPropertyChanged(); } }
+        
         public ICommand NavigateBM1Command { get; }
         public ICommand NavigateBM2Command { get; }
         public ICommand NavigateBM3Command { get; }
@@ -46,6 +67,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public DanhMucViewModel(QuanLyCapDienContext context)
         {
             _db = context;
+            _trangChuViewModel = new TrangChuViewModel();
 
             _bm1ViewModel = new DeNghiCapDienViewModel(_db);
             _bm2ViewModel = new BienBanCapDienViewModel(_db);
@@ -55,6 +77,13 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             _bm6ViewModel = new ThongKeDienViewModel(_db);
             _cauHinhHeThongViewModel = new CauHinhHeThongViewModel(_db);
 
+            _bm1ViewModel.RequestGoHome = GoHome;
+            _bm2ViewModel.RequestGoHome = GoHome;
+            _bm3ViewModel.RequestGoHome = GoHome;
+            _bm4ViewModel.RequestGoHome = GoHome;
+            _bm5ViewModel.RequestGoHome = GoHome;
+            _bm6ViewModel.RequestGoHome = GoHome;
+
             NavigateBM1Command = new RelayCommand(ExecuteNavigateBM1, CanNavigateBM1);
             NavigateBM2Command = new RelayCommand(ExecuteNavigateBM2, CanNavigateBM2);
             NavigateBM3Command = new RelayCommand(ExecuteNavigateBM3, CanNavigateBM3);
@@ -63,7 +92,19 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             NavigateBM6Command = new RelayCommand(ExecuteNavigateBM6, CanNavigateBM6);
             NavigateCauHinhHeThongCommand = new RelayCommand(ExecuteNavigateCauHinhHeThong, CanNavigateCauHinhHeThong);
 
-            CurrentViewModel = new DeNghiCapDienViewModel(_db);
+            CurrentViewModel = _trangChuViewModel;
+        }
+        private void GoHome()
+        {
+            CurrentViewModel = _trangChuViewModel;
+
+            IsMenu1Checked = false;
+            IsMenu2Checked = false;
+            IsMenu3Checked = false;
+            IsMenu4Checked = false;
+            IsMenu5Checked = false;
+            IsMenu6Checked = false;
+            IsMenuCauHinhChecked = false;
         }
         private void ExecuteNavigateBM1(object obj)
         {

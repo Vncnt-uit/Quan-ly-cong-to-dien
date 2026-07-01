@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Quản lý công tơ điện": {
+      "commandName": "Project",
+      "sqlDebugging": false
+    }
+  }
+}
