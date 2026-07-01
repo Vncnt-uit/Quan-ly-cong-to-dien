@@ -1,11 +1,13 @@
-Execute file sql để tạo Database trước.
-Vào file App.config, ở dòng connectionString="Server=.;Database=QuanLyCapDien;Trusted_Connection=True;TrustServerCertificate=True;" />
-Sửa "Server=." thành tên Server SQL của mọi người xong mới chạy và test được.
+### Installation & Setup
 
-## Cập nhật quan trọng (Cần đọc kỹ)
-SQL có vài thay đổi với giá trị trong bảng lên kiểm tra từng bảng, nếu có dòng alter table nào chưa chạy thì chạy với lại có vài bảng có thể mình làm khác nhau nên là xóa CSDL chạy lại toàn bộ cho chắc ăn.
+1. **Clone the Repository:**
 
-Chạy 2 lệnh này để hard reset lại local của ông theo cái repo tại tui phải refactor hết để nó ra MVVM
 ```bash
-- git fetch origin
-- git reset --hard origin/main
+   git clone https://github.com/Vncnt-uit/Quan-ly-cong-to-dien.git
+```
+2. **Create the database using the SQL script we included in this repository.**
+3. **Adjust the connection string in App.Config to your local database.**
+4. **Setup the application.**
+- Open the WPF application Solution using Visual Studio.
+- Restore NuGet Packages using the dotnet restore command.
+- Build and run the Desktop application.
