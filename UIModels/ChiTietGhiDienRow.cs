@@ -8,6 +8,7 @@ namespace Quản_lý_công_tơ_điện.UIModels
     {
         private readonly QuanLyCapDienContext _db;
         public Action RequestValidation { get; set; }
+        public Func<string> GetKyGhiChiSo { get; set; }
 
         private int _stt;
         private string _maCongTo;
@@ -136,6 +137,15 @@ namespace Quản_lý_công_tơ_điện.UIModels
 
             if (info != null)
             {
+                string currentKyGhi = GetKyGhiChiSo?.Invoke();
+                bool isAlreadyRecorded = (from c in _db.Chitietghidiens
+                                          join pg in _db.Phieughidiens on c.MaPhieuGhi equals pg.MaPhieuGhi
+                                          where c.MaBienBan == info.MaBienBan && pg.KyGhiChiSo == currentKyGhi
+                                          select c).Any();
+                if (isAlreadyRecorded)
+                {
+                    return;
+                }
                 MaBienBan = info.MaBienBan;
                 TenKhachHang = info.HoTen;
                 DiaChi = info.DiaChi;

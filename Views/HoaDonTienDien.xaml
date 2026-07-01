@@ -157,8 +157,11 @@
                                 </Style>
                             </Border.Style>
 
-                            <ComboBox ItemsSource="{Binding DanhSachMaCongTo}" Text="{Binding MaCongTo, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" IsTextSearchEnabled="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Margin="5,4">
-                            </ComboBox>
+                            <TextBox Text="{Binding MaCongTo, UpdateSourceTrigger=LostFocus}" 
+                                     Background="Transparent" 
+                                     BorderThickness="0" 
+                                     VerticalContentAlignment="Center" 
+                                     Padding="8,0,8,0"/>
                         </Border>
                         <TextBlock Text="{Binding MaCongToErrorMessage}" Foreground="#e74a3b" FontSize="11" FontStyle="Italic" Visibility="{Binding HasMaCongToError, Converter={StaticResource BoolToVis}}" Margin="10,0,0,10" MinHeight="15"/>
 

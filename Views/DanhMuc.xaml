@@ -77,9 +77,9 @@
     <Grid x:Name="MainLayout" Focusable="True">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#FFE8F1FD" Offset="0"/>
+                <GradientStop Color="#E6E6FF" Offset="0"/>
                 <GradientStop Color="#FFF3E6F9" Offset="0.5"/>
-                <GradientStop Color="#FFEBF6FA" Offset="1"/>
+                <GradientStop Color="#CCFFFF" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
 

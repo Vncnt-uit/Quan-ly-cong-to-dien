@@ -178,11 +178,11 @@
                         <TextBlock Text="Thời gian gửi yêu cầu" FontWeight="SemiBold" Foreground="#464555" FontSize="12" VerticalAlignment="Center" Margin="0,0,15,0"/>
                         <TextBlock Text="từ" FontWeight="Bold" Foreground="Red" VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <Border CornerRadius="16" Height="32" Background="White" BorderBrush="#e0e0e0" BorderThickness="1" Padding="5,0" Width="220">
-                            <DatePicker SelectedDate="{Binding TuNgay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center"/>
+                            <TextBox Text="{Binding TuNgay, UpdateSourceTrigger=LostFocus}" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center"/>
                         </Border>
                         <TextBlock Text="đến" FontWeight="Bold" Foreground="Red" VerticalAlignment="Center" Margin="15,0,10,0"/>
                         <Border CornerRadius="16" Height="32" Background="White" BorderBrush="#e0e0e0" BorderThickness="1" Padding="5,0" Width="220">
-                            <DatePicker SelectedDate="{Binding DenNgay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center"/>
+                            <TextBox Text="{Binding DenNgay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center"/>
                         </Border>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">

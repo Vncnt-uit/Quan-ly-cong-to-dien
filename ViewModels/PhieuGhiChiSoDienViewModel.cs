@@ -73,17 +73,11 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         {
             try
             {
-                var lastRecord = _db.Phieughidiens.OrderByDescending(p => p.MaPhieuGhi).FirstOrDefault();
-                if (lastRecord != null && lastRecord.MaPhieuGhi.StartsWith("PGD"))
-                {
-                    int nextNum = int.Parse(lastRecord.MaPhieuGhi.Substring(3)) + 1;
-                    return "PGD" + nextNum.ToString("D3");
-                }
-                return "PGD001";
+                return "PGD" + DateTime.Now.ToString("yyMMddHHmmss");
             }
             catch
             {
-                return "PGD_ERR";
+                return "PGD" + DateTime.Now.Ticks.ToString().Substring(0, 15);
             }
         }
 
@@ -93,7 +87,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
             var newRow = new ChiTietGhiDienRow(_db, DanhSachGhiDien.Count + 1)
             {
-                RequestValidation = ValidateGrid
+                RequestValidation = ValidateGrid,
+                GetKyGhiChiSo = () => this.KyGhiChiSo
             };
             DanhSachGhiDien.Add(newRow);
         }

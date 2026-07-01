@@ -1,6 +1,7 @@
 ﻿using Quản_lý_công_tơ_điện.Base;
 using Quản_lý_công_tơ_điện.Models;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Input;
 
 namespace Quản_lý_công_tơ_điện.ViewModels
@@ -15,8 +16,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         private string _hoTen;
         private string _diaChi;
         private string _trangThai;
-        private DateTime? _tuNgay;
-        private DateTime? _denNgay;
+        private string _tuNgay;
+        private string _denNgay;
         private string _selectedMucDich;
         private string _selectedSoPha;
 
@@ -31,8 +32,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public string HoTen { get => _hoTen; set { _hoTen = value; OnPropertyChanged(); } }
         public string DiaChi { get => _diaChi; set { _diaChi = value; OnPropertyChanged(); } }
         public string TrangThai { get => _trangThai; set { _trangThai = value; OnPropertyChanged(); } }
-        public DateTime? TuNgay { get => _tuNgay; set { _tuNgay = value; OnPropertyChanged(); } }
-        public DateTime? DenNgay { get => _denNgay; set { _denNgay = value; OnPropertyChanged(); } }
+        public string TuNgay { get => _tuNgay; set { _tuNgay = value; OnPropertyChanged(); } }
+        public string DenNgay { get => _denNgay; set { _denNgay = value; OnPropertyChanged(); } }
         public string SelectedMucDich { get => _selectedMucDich; set { _selectedMucDich = value; OnPropertyChanged(); } }
         public string SelectedSoPha { get => _selectedSoPha; set { _selectedSoPha = value; OnPropertyChanged(); } }
 
@@ -88,8 +89,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             SelectedSoPha = "";
             SelectedMucDich = "";
 
-            TuNgay = null;
-            DenNgay = null;
+            TuNgay = string.Empty;
+            DenNgay = string.Empty;
 
             SearchResults?.Clear();
 
@@ -124,16 +125,29 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 if (!string.IsNullOrEmpty(SelectedMucDich))
                     query = query.Where(x => x.p.MaMucDich == SelectedMucDich);
 
-                if (TuNgay.HasValue)
+                if (!string.IsNullOrWhiteSpace(TuNgay))
                 {
-                    DateTime start = TuNgay.Value.Date;
-                    query = query.Where(x => x.p.ThoiGianGui >= start);
+                    if (DateTime.TryParseExact(TuNgay.Trim(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime start))
+                    {
+                        query = query.Where(x => x.p.ThoiGianGui >= start);
+                    }
+                    else
+                    {
+                        query = query.Where(x => false);
+                    }
                 }
 
-                if (DenNgay.HasValue)
+                if (!string.IsNullOrWhiteSpace(DenNgay))
                 {
-                    DateTime end = DenNgay.Value.Date.AddDays(1);
-                    query = query.Where(x => x.p.ThoiGianGui < end);
+                    if (DateTime.TryParseExact(DenNgay.Trim(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime end))
+                    {
+                        end = end.AddDays(1);
+                        query = query.Where(x => x.p.ThoiGianGui < end);
+                    }
+                    else
+                    {
+                        query = query.Where(x => false);
+                    }
                 }
 
                 var rawData = query.OrderByDescending(x => x.p.ThoiGianGui).ToList();

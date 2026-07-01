@@ -194,9 +194,40 @@
 
                                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                     <TextBlock Text="LOẠI CÔNG TƠ ĐIỆN" FontWeight="Bold" Margin="0,0,0,5" Foreground="#464650" FontSize="11"/>
-                                    <Border CornerRadius="12.5" Height="30" Background="#E9ECEF" BorderBrush="#FFDDDDDD" BorderThickness="1">
-                                        <TextBox Text="{Binding TenLoaiCongTo}" IsReadOnly="True" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="8,0,8,0" Foreground="#555555"/>
+
+                                    <Border CornerRadius="16" Height="32" Background="White" Padding="5,5">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderBrush" Value="#e0e0e0"/>
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasLoaiCongToError}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="Red"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
+                                        <ComboBox ItemsSource="{Binding DanhSachLoaiCongTo}" 
+                                                  SelectedItem="{Binding TenLoaiCongTo, UpdateSourceTrigger=PropertyChanged}" 
+                                                  Background="Transparent" 
+                                                  BorderThickness="0" 
+                                                  VerticalContentAlignment="Center" 
+                                                  IsEditable="True" 
+                                                  IsReadOnly="True" 
+                                                  Cursor="Arrow" 
+                                                  ForceCursor="True">
+                                            <ComboBox.Resources>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="Cursor" Value="Arrow"/>
+                                                    <Setter Property="IsReadOnlyCaretVisible" Value="False"/>
+                                                    <Setter Property="ForceCursor" Value="True"/>
+                                                </Style>
+                                            </ComboBox.Resources>
+                                        </ComboBox>
                                     </Border>
+
+                                    <TextBlock Text="{Binding LoaiCongToErrorMessage}" Foreground="Red" FontSize="11" FontStyle="Italic" Visibility="{Binding HasLoaiCongToError, Converter={StaticResource BoolToVis}}" Margin="5,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Grid>
 

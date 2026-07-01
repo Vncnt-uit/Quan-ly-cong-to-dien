@@ -48,10 +48,14 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         private bool _hasViTriError;
         private string _viTriErrorMessage;
 
+        private bool _hasLoaiCongToError;
+        private string _loaiCongToErrorMessage;
+
         private string _statusMessage;
         private bool _isSuccessStatus;
 
         private List<string> _maPhieuList;
+        private List<string> _danhSachLoaiCongTo;
 
         public DateTime NgayHienTai { get; set; } = DateTime.Today;
         public string MaBienBan { get => _maBienBan; set { _maBienBan = value; OnPropertyChanged(); } }
@@ -59,9 +63,21 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public string HoTen { get => _hoTen; set { _hoTen = value; OnPropertyChanged(); } }
         public string DiaChi { get => _diaChi; set { _diaChi = value; OnPropertyChanged(); } }
         public string SoPhaDangKy { get => _soPhaDangKy; set { _soPhaDangKy = value; OnPropertyChanged(); } }
-        public string TenLoaiCongTo { get => _tenLoaiCongTo; set { _tenLoaiCongTo = value; OnPropertyChanged(); } }
+        public string TenLoaiCongTo { get => _tenLoaiCongTo; set { _tenLoaiCongTo = value; OnPropertyChanged(); ClearStatus(); ValidateLoaiCongTo(); } }
 
-        public string SelectedMaPhieu { get => _selectedMaPhieu; set { _selectedMaPhieu = value; OnPropertyChanged(); ClearStatus(); ValidateMaPhieu(); LoadPhieuDetails(); } }
+        public string SelectedMaPhieu
+        {
+            get => _selectedMaPhieu;
+            set
+            {
+                _selectedMaPhieu = value?.ToUpper();
+
+                OnPropertyChanged();
+                ClearStatus();
+                ValidateMaPhieu();
+                LoadPhieuDetails();
+            }
+        }
         public DateTime? ThoiGianBatDau { get => _thoiGianBatDau; set { _thoiGianBatDau = value; OnPropertyChanged(); ClearStatus(); ValidateThoiGianBatDau(); } }
         public string MaCongTo { get => _maCongTo; set { _maCongTo = value; OnPropertyChanged(); ClearStatus(); ValidateMaCongTo(); } }
         public string HangSanXuat { get => _hangSanXuat; set { _hangSanXuat = value; OnPropertyChanged(); ClearStatus(); ValidateHangSanXuat(); } }
@@ -90,11 +106,15 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         public bool HasViTriError { get => _hasViTriError; set { _hasViTriError = value; OnPropertyChanged(); } }
         public string ViTriErrorMessage { get => _viTriErrorMessage; set { _viTriErrorMessage = value; OnPropertyChanged(); } }
 
+        public bool HasLoaiCongToError { get => _hasLoaiCongToError; set { _hasLoaiCongToError = value; OnPropertyChanged(); } }
+        public string LoaiCongToErrorMessage { get => _loaiCongToErrorMessage; set { _loaiCongToErrorMessage = value; OnPropertyChanged(); } }
+
 
         public string StatusMessage { get => _statusMessage; set { _statusMessage = value; OnPropertyChanged(); } }
         public bool IsSuccessStatus { get => _isSuccessStatus; set { _isSuccessStatus = value; OnPropertyChanged(); } }
         
         public List<string> MaPhieuList { get => _maPhieuList; set { _maPhieuList = value; OnPropertyChanged(); } }
+        public List<string> DanhSachLoaiCongTo { get => _danhSachLoaiCongTo; set { _danhSachLoaiCongTo = value; OnPropertyChanged(); } }
 
         public ICommand LuuCommand { get; }
         public ICommand ThoatCommand { get; }
@@ -113,15 +133,21 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             if (string.IsNullOrWhiteSpace(SelectedMaPhieu))
             {
                 HasMaPhieuError = true;
-                MaPhieuErrorMessage = "* Vui lòng chọn hoặc nhập mã phiếu.";
+                MaPhieuErrorMessage = "* Vui lòng nhập mã phiếu.";
                 return;
             }
-            if (MaPhieuList == null || !MaPhieuList.Contains(SelectedMaPhieu.Trim()))
+
+            string inputTrimmed = SelectedMaPhieu.Trim();
+
+            bool exists = MaPhieuList != null && MaPhieuList.Any(p => p.Trim().Equals(inputTrimmed, StringComparison.OrdinalIgnoreCase));
+
+            if (!exists)
             {
                 HasMaPhieuError = true;
                 MaPhieuErrorMessage = "* Mã phiếu không tồn tại hoặc đã được xử lý.";
                 return;
             }
+
             HasMaPhieuError = false;
             MaPhieuErrorMessage = string.Empty;
         }
@@ -238,6 +264,49 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             HasViTriError = false;
             ViTriErrorMessage = string.Empty;
         }
+
+        private void ValidateLoaiCongTo()
+        {
+            if (string.IsNullOrWhiteSpace(TenLoaiCongTo))
+            {
+                HasLoaiCongToError = true;
+                LoaiCongToErrorMessage = "* Vui lòng nhập tên loại công tơ.";
+                _maLoaiCongToDB = string.Empty;
+                return;
+            }
+
+            if (string.IsNullOrEmpty(SelectedMaPhieu) || HasMaPhieuError)
+            {
+                HasLoaiCongToError = true;
+                LoaiCongToErrorMessage = "* Vui lòng điền mã phiếu hợp lệ trước.";
+                _maLoaiCongToDB = string.Empty;
+                return;
+            }
+
+            var phieu = _db.Phieucapdiens.FirstOrDefault(p => p.MaPhieu == SelectedMaPhieu);
+            if (phieu != null)
+            {
+                string inputTrimmed = TenLoaiCongTo.Trim().ToLower();
+
+                var validMeter = _db.Cauhinhcongtos
+                    .Where(c => c.MaSoPha == phieu.MaSoPha && c.MaLoaiCongToNavigation.TenLoaiCongTo.ToLower() == inputTrimmed)
+                    .Select(c => c.MaLoaiCongToNavigation)
+                    .FirstOrDefault();
+
+                if (validMeter == null)
+                {
+                    HasLoaiCongToError = true;
+                    LoaiCongToErrorMessage = "* Tên loại công tơ không phù hợp với số pha.";
+                    _maLoaiCongToDB = string.Empty;
+                    return;
+                }
+
+                _maLoaiCongToDB = validMeter.MaLoaiCongTo;
+            }
+
+            HasLoaiCongToError = false;
+            LoaiCongToErrorMessage = string.Empty;
+        }
         private void ClearStatus()
         {
             if (!string.IsNullOrEmpty(StatusMessage))
@@ -251,6 +320,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             {
                 var processed = _db.Bienbancapdiens.Select(b => b.MaPhieu).ToList();
                 MaPhieuList = _db.Phieucapdiens.Where(p => !processed.Contains(p.MaPhieu)).Select(p => p.MaPhieu).ToList();
+                DanhSachLoaiCongTo = _db.Loaicongtos.Select(l => l.TenLoaiCongTo).ToList();
             }
             catch (Exception ex)
             {
@@ -267,7 +337,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             NgayLap = DateTime.Now.ToString("dd/MM/yyyy");
             ThoiGianBatDau = DateTime.Today;
 
-            ChiSoBanDau = "0";
+            ChiSoBanDau = string.Empty;
             GenerateMaBienBan();
 
             HasMaPhieuError = false;
@@ -277,6 +347,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             HasNamSanXuatError = false;
             HasChiSoError = false;
             HasViTriError = false;
+            HasLoaiCongToError = false;
 
             MaPhieuErrorMessage = string.Empty;
             DateErrorMessage = string.Empty;
@@ -285,6 +356,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             NamSanXuatErrorMessage = string.Empty;
             ChiSoErrorMessage = string.Empty;
             ViTriErrorMessage = string.Empty;
+            LoaiCongToErrorMessage = string.Empty;
         }
 
         private void GenerateMaBienBan()
@@ -320,9 +392,12 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             SoPhaDangKy = string.Empty;
             TenLoaiCongTo = string.Empty;
             _maLoaiCongToDB = string.Empty;
+
+            HasLoaiCongToError = false;
+            LoaiCongToErrorMessage = string.Empty;
+
             if (HasMaPhieuError || string.IsNullOrEmpty(SelectedMaPhieu))
-            {
-                HoTen = DiaChi = SoPhaDangKy = TenLoaiCongTo = _maLoaiCongToDB = string.Empty;
+            {   
                 return;
             }
 
@@ -336,17 +411,6 @@ namespace Quản_lý_công_tơ_điện.ViewModels
                 HoTen = info.p.HoTen;
                 DiaChi = info.p.DiaChi;
                 SoPhaDangKy = info.lp.TenSoPha;
-
-                var loaiCongTo = _db.Cauhinhcongtos
-                    .Where(c => c.MaSoPha == info.p.MaSoPha)
-                    .Select(c => c.MaLoaiCongToNavigation)
-                    .FirstOrDefault();
-
-                if (loaiCongTo != null)
-                {
-                    TenLoaiCongTo = loaiCongTo.TenLoaiCongTo;
-                    _maLoaiCongToDB = loaiCongTo.MaLoaiCongTo;
-                }
             }
         }
 
@@ -385,9 +449,10 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             ValidateNamSanXuat();
             ValidateChiSoBanDau();
             ValidateViTriLapDat();
+            ValidateLoaiCongTo();
 
             if (HasMaPhieuError || HasDateError || HasMaCongToError || HasHangSanXuatError ||
-                HasNamSanXuatError || HasChiSoError || HasViTriError)
+                HasNamSanXuatError || HasChiSoError || HasViTriError || HasLoaiCongToError)
             {
                 IsSuccessStatus = false;
                 StatusMessage = "Vui lòng kiểm tra lại các thông tin chưa hợp lệ.";

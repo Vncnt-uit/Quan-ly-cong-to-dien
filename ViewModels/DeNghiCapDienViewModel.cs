@@ -19,7 +19,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
         private string _email;
         private string _diaChi;
         private string _maYeuCau;
-        private string _thoiGian;
+        private DateTime? _thoiGian;
 
         private string _selectedMucDich;
         private string _selectedSoPha;
@@ -104,8 +104,8 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             }
         }
         public string MaYeuCau { get => _maYeuCau; set { _maYeuCau = value; OnPropertyChanged(); } }
-        public string ThoiGian { get => _thoiGian; set { _thoiGian = value; OnPropertyChanged(); } }
-        
+        public DateTime? ThoiGian { get => _thoiGian; set { _thoiGian = value; OnPropertyChanged(); } }
+
         public bool HasCccdError { get => _hasCccdError; set { _hasCccdError = value; OnPropertyChanged(); } }
         public string CccdErrorMessage { get => _cccdErrorMessage; set { _cccdErrorMessage = value; OnPropertyChanged(); } }
         
@@ -336,7 +336,7 @@ namespace Quản_lý_công_tơ_điện.ViewModels
 
         private void PrepareNewForm()
         {
-            ThoiGian = DateTime.Now.ToString("dd/MM/yyyy - HH:mm:ss");
+            ThoiGian = DateTime.Today;
             GenerateMaYeuCau();
 
             HasCccdError = false;
@@ -444,12 +444,11 @@ namespace Quản_lý_công_tơ_điện.ViewModels
             try
             {
                 string formattedName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(HoTen.Trim().ToLower());
-                DateTime parsedTime = DateTime.ParseExact(ThoiGian, "dd/MM/yyyy - HH:mm:ss", CultureInfo.InvariantCulture);
 
                 var newPhieu = new Phieucapdien
                 {
                     MaPhieu = MaYeuCau,
-                    ThoiGianGui = parsedTime,
+                    ThoiGianGui = ThoiGian ?? DateTime.Today,
                     Cccd = Cccd.Trim(),
                     HoTen = formattedName,
                     NamSinh = NamSinh,
